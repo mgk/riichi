@@ -12,28 +12,51 @@ class Tile
     @rank = rank
     @wind = wind
     @dragon = dragon
+
+    freeze
   end
 
   def to_s
     if suit
-      "#{rank}#{suit}"
+      "#{rank}#{suit.to_s[0]}"
     elsif wind
-      "#{wind}"
+      "#{wind.to_s[0].upcase}"
     else
-      "#{dragon}"
+      case dragon
+      when :red then 'C'
+      when :green then 'F'
+      when :white then 'B'
+      end
     end
   end
 
-  def wind?
-    !!wind
-  end
-
-  def dragon?
-    !!dragon
+  def self.from_s(str)
+    if str.length == 2
+      suit = case str[1]
+      when 'p' then :pinzu
+      when 'm' then :manzu
+      when 's' then :sozu
+      else
+        raise ArgumentError, str
+      end
+      Tile.new(suit: suit, rank: Integer(str[0]))
+    else
+      case str
+      when 'E' then Tile.new(wind: :east)     # 東
+      when 'S' then Tile.new(wind: :south)    # 南
+      when 'W' then Tile.new(wind: :west)     # 西
+      when 'N' then Tile.new(wind: :north)    # 北
+      when 'C' then Tile.new(dragon: :red)    # 中 - (pinyin chung)
+      when 'F' then Tile.new(dragon: :green)  # 發 - (pinyin fa)
+      when 'B' then Tile.new(dragon: :white)  # 白 - (pingyin bai)
+      else
+        raise ArgumentError, str
+      end
+    end
   end
 
   def honour?
-    wind? || dragon?
+    wind || dragon
   end
 
   def terminal?
@@ -41,7 +64,7 @@ class Tile
   end
 
   def simple?
-    !!suit && !terminal?
+    suit && !terminal?
   end
 
   def <=>(other)
@@ -65,7 +88,7 @@ class Tile
   end
 
   def self.create_deck
-    tiles = [:pin, :sou, :man].map do |suit|
+    tiles = [:pinzu, :sozu, :manzu].map do |suit|
       (1..9).map do |rank|
         Tile.new(suit: suit, rank: rank)
       end
@@ -74,9 +97,9 @@ class Tile
       Tile.new(wind: :south),
       Tile.new(wind: :west),
       Tile.new(wind: :north),
-      Tile.new(dragon: :haku),
-      Tile.new(dragon: :hatsu),
-      Tile.new(dragon: :chun),
+      Tile.new(dragon: :white),
+      Tile.new(dragon: :green),
+      Tile.new(dragon: :red),
     ]
 
     tiles.each_with_index.map do |t, i|
@@ -116,23 +139,27 @@ class PlayerHand
   end
 end
 
-deck = Tile.create_deck
-
-counts = Hash.new(0)
-10000.times do
-  tiles = deck.shuffle[0, 14]
-
-  hand = PlayerHand.new tiles
-  unmatched, sets = hand.sets
-
-  counts[sets.length] += 1
-  if sets.length == 4
-    if unmatched[0] == unmatched[1]
-      counts['yakuman'] += 1
-      counts[4] -= 1
-    end
-  end
+5.times do
+  puts PlayerHand.new(Tile.create_deck().shuffle[0,14]).tiles.join(' ')
 end
 
-puts counts
-puts counts.values.sum
+# deck = Tile.create_deck
+
+# counts = Hash.new(0)
+# 10000.times do
+#   tiles = deck.shuffle[0, 14]
+
+#   hand = PlayerHand.new tiles
+#   unmatched, sets = hand.sets
+
+#   counts[sets.length] += 1
+#   if sets.length == 4
+#     if unmatched[0] == unmatched[1]
+#       counts['yakuman'] += 1
+#       counts[4] -= 1
+#     end
+#   end
+# end
+
+# puts counts
+# puts counts.values.sum
