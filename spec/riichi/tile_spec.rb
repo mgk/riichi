@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Tile" do
+describe Tile do
   it "to_s" do
     Tile.new(suit: :pinzu, rank: 4).to_s.must_equal('4p')
   end

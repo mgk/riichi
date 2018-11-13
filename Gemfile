@@ -1,5 +1,5 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'minitest'
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
-gem 'minitest-reporters'
+gemspec

@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    riichi (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -9,14 +14,17 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
+    rake (12.3.1)
     ruby-progressbar (1.10.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  minitest
-  minitest-reporters
+  bundler (~> 1.16)
+  minitest-reporters (~> 1.3)
+  rake (~> 12.3)
+  riichi!
 
 BUNDLED WITH
    1.16.6
