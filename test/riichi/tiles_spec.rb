@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Tiles do
 
+  to_tiles = lambda { |s| Tiles.from_s(s) }
+
   describe "from_s" do
     it "initilizes sorted tiles from a string" do
       tiles = Tiles.from_s("1s 2s W").tiles
@@ -21,13 +23,33 @@ describe Tiles do
         # minuend            subtrahend        difference
         ["1p 2p 3p",         "2p 3p",          "1p"],
         ["1p 2p 2p",         "2p",             "1p 2p"],
-        ["W E W W",          "W W",             "E W"],
+        ["W E W W",          "W W",            "E W"],
         ["1p",               "2p",             "1p"],
         ["1p 8p 9p",         "W E N S F B",    "1p 8p 9p"],
-      ].map { |test| test.map { |tiles| Tiles.from_s(tiles) } }
+      ].map { |test| test.map(&to_tiles) }
 
       test_cases.each do |minuend, subtrahend, difference|
         (minuend - subtrahend).must_equal(difference)
+      end
+    end
+  end
+
+  describe "sets" do
+    it "determines all chows and pungs in tiles" do
+      test_cases = [
+        ["",                   []],
+        ["W W N B 1p 2p 4p",   []],
+        ["1p 2p 3p",           ["1p 2p 3p"] ],
+        ["1p 2p 3p 4p",        ["1p 2p 3p", "2p 3p 4p"] ],
+        ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
+        ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
+        ["1p 1p 1p 2p 3p 4p",  ["1p 1p 1p", "1p 2p 3p", "2p 3p 4p"] ],
+      ].map do |input, expected_sets|
+        [Tiles.from_s(input), expected_sets.map(&to_tiles).map(&:tiles)]
+      end
+
+      test_cases.each do |tiles, expected|
+        tiles.sets.must_equal(expected)
       end
     end
   end

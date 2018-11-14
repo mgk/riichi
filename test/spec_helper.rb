@@ -1,9 +1,9 @@
 require 'bundler/setup'
 
 require 'simplecov'
-SimpleCov.command_name ARGV[1].sub('^spec/', '')
+SimpleCov.command_name ARGV[1]&.sub('^test/lib/', '')
 SimpleCov.start do
-  add_filter '/spec/'
+  add_filter '/test/'
 end
 
 require 'riichi'

@@ -47,6 +47,8 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/mgk/ri
 
 ## Symbols
 
+https://en.wikipedia.org/wiki/Mahjong_tiles
+
 ### Individual Tile Symbols
 🀀🀁🀂🀃🀅 🀆🀫🀄︎a
 🀇🀈🀉🀊🀋🀌🀍🀎🀏
