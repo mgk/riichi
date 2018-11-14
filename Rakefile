@@ -9,4 +9,3 @@ Rake::TestTask.new(:default) do |t|
   t.test_files = FileList['spec/**/*_spec.rb']
 end
 desc 'Run tests'
-

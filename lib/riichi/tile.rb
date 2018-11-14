@@ -1,5 +1,3 @@
-require 'set'
-
 module Riichi
   class Tile
     include Comparable

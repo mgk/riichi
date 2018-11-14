@@ -8,6 +8,7 @@ end
 
 require 'riichi'
 Tile = Riichi::Tile
+Tiles = Riichi::Tiles
 
 require 'minitest/autorun'
 require 'minitest/reporters'
