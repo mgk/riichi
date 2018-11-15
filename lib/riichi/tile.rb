@@ -43,24 +43,6 @@ module Riichi
       self.type <=> other.type
     end
 
-    def self.pung?(tiles)
-      tiles.size == 3 &&
-      tiles[0] == tiles[1] &&
-      tiles[1] == tiles[2]
-    end
-
-    def self.chow?(tiles)
-      tiles.size == 3 &&
-      tiles.all? { |tile| tile.suited? } &&
-      tiles.all? { |tile| tile.suit == tiles[0].suit } &&
-      tiles[1].rank == tiles[0].rank + 1 &&
-      tiles[2].rank == tiles[1].rank + 1
-    end
-
-    def self.set?(tiles)
-      self.pung?(tiles) || self.chow?(tiles)
-    end
-
     def self.tile_types
       suited_tiles = [:pinzu, :sozu, :manzu].flat_map do |suit|
         (1..9).map do |rank|

@@ -33,6 +33,24 @@ module Riichi
       Tiles.new(result)
     end
 
+    def self.pung?(tiles)
+      tiles.size == 3 &&
+      tiles[0] == tiles[1] &&
+      tiles[1] == tiles[2]
+    end
+
+    def self.chow?(tiles)
+      tiles.size == 3 &&
+      tiles.all? { |tile| tile.suited? } &&
+      tiles.all? { |tile| tile.suit == tiles[0].suit } &&
+      tiles[1].rank == tiles[0].rank + 1 &&
+      tiles[2].rank == tiles[1].rank + 1
+    end
+
+    def self.set?(tiles)
+      pung?(tiles) || chow?(tiles)
+    end
+
     def sets
       _sets([], @tiles)
     end
@@ -45,7 +63,7 @@ module Riichi
       candidate = remaining.take(3)
       rest = remaining.drop(1)
 
-      if Tile.set?(candidate)
+      if Tiles.set?(candidate)
         _sets(acc + [candidate], rest)
       else
         _sets(acc, rest)
