@@ -39,14 +39,20 @@ module Riichi
       suit && !terminal?
     end
 
+    def next_in_suit
+      if suited? && rank < 9
+        Tile.from_s("#{rank + 1}#{suit[0]}")
+      end
+    end
+
     def <=>(other)
-      self.type <=> other.type
+      self.type <=> other&.type
     end
 
     def self.tile_types
       suited_tiles = [:pinzu, :sozu, :manzu].flat_map do |suit|
         (1..9).map do |rank|
-          Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit.to_s[0]}")
+          Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}")
         end
       end
 

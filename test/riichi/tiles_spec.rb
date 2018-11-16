@@ -82,13 +82,46 @@ describe Tiles do
         ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
         ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
         ["1p 1p 1p 2p 3p 4p",  ["1p 1p 1p", "1p 2p 3p", "2p 3p 4p"] ],
+
+        # ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
+        #   ["7s 8s 9s", "8s 8s 8s", "1m 1m 3m"]]
+
+        # 5p 7p 8p 9p 1s 1s 3s 5s 1m 2m 3m 3m 4m N
       ].map do |input, expected_sets|
         [Tiles.from_s(input), expected_sets.map(&to_tiles).map(&:tiles)]
       end
 
       test_cases.each do |tiles, expected|
-        tiles.sets.must_equal(expected)
+        tiles.sets.must_equal(expected, "input: #{tiles}")
       end
+    end
+
+    it "random hand test: all returned sets are really sets" do
+      10000.times do |n|
+        hand = Tiles.new(Tile.deck.sample(14))
+        hand.sets.each do |set|
+          Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+        end
+      end
+    end
+
+   it "random hand test: all sets are found" do
+      0.times do |n|
+        hand = Tiles.new(Tile.deck.sample(14))
+        hand.sets.each do |set|
+          Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+          (hand - Tiles.new(set)).tiles.combination(3) do |group|
+            Tiles.set?(group).must_equal(false, "n=[#{n}] missed set #{set} for #{hand}")
+          end
+        end
+      end
+    end
+  end
+
+  describe "chow_start?" do
+    it "works" do
+      tiles = Tiles.from_s("7s 8s 8s 8s 9s 1m").tiles
+      Tiles.chow_start?(tiles).must_equal(true)
     end
   end
 

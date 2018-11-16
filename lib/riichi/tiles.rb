@@ -39,6 +39,10 @@ module Riichi
       tiles[1] == tiles[2]
     end
 
+    def pung?
+      self.pung? tiles
+    end
+
     def self.chow?(tiles)
       tiles.size == 3 &&
       tiles.all? { |tile| tile.suited? } &&
@@ -47,8 +51,47 @@ module Riichi
       tiles[2].rank == tiles[1].rank + 1
     end
 
+    def self.chow_start?(tiles)
+      sequence_length = 1
+      curr_idx = 0
+      next_idx = 1
+
+      while tiles[next_idx] do
+        # advance past duplicates
+        while tiles[next_idx] == tiles[curr_idx] do
+          curr_idx += 1
+          next_idx += 1
+        end
+
+        # update if sequence continues with next tile
+        if tiles[next_idx] == tiles[curr_idx].next_in_suit
+          sequence_length += 1
+          curr_idx = next_idx
+          next_idx += 1
+          if sequence_length == 3
+            return true
+          end
+        else
+          return false
+        end
+      end
+
+      if tiles[1] != first
+        return false
+      end
+
+    end
+
+    def chow?
+      self.chow? tiles
+    end
+
     def self.set?(tiles)
       pung?(tiles) || chow?(tiles)
+    end
+
+    def set?
+      self.set? tiles
     end
 
     def sets
