@@ -1,5 +1,17 @@
 require 'spec_helper'
 
+class Array
+  def to_tile_strings
+    self.map do |x|
+      case x
+      when Riichi::Tile then x.to_s
+      when Array then x.to_tile_strings
+      else x
+      end
+    end
+  end
+end
+
 describe Tiles do
 
   to_tile = lambda { |str| Tile.from_s(str) }
@@ -75,32 +87,37 @@ describe Tiles do
   describe "sets" do
     it "determines all chows and pungs in tiles" do
       test_cases = [
-        ["",                   []],
-        ["W W N B 1p 2p 4p",   []],
-        ["1p 2p 3p",           ["1p 2p 3p"] ],
-        ["1p 2p 3p 4p",        ["1p 2p 3p", "2p 3p 4p"] ],
-        ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
-        ["1p 1p 2p 3p",        ["1p 2p 3p"] ],
-        ["1p 1p 1p 2p 3p 4p",  ["1p 1p 1p", "1p 2p 3p", "2p 3p 4p"] ],
+        ["",                  [[]]  ],
+        ["W W N B 1p 2p 4p",   [[]]  ],
+        ["1p 2p 3p",           [["1p 2p 3p"]] ],
+# fix       ["1p 2p 3p 4p",        [["1p 2p 3p"], ["2p 3p 4p"]]  ],
+        ["1p 1p 2p 3p",        [["1p 2p 3p"]]  ],
+        ["1p 1p 1p 2p 3p 4p",  [["1p 2p 3p"], ["1p 1p 1p", "2p 3p 4p"]]  ],
 
-        # ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
-        #   ["7s 8s 9s", "8s 8s 8s", "1m 1m 3m"]]
+# fix        ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
+#           [["7s 8s 9s", "8s 8s 8s", "1m 1m 3m"]]  ]
 
-        # 5p 7p 8p 9p 1s 1s 3s 5s 1m 2m 3m 3m 4m N
-      ].map do |input, expected_sets|
-        [Tiles.from_s(input), expected_sets.map(&to_tiles).map(&:tiles)]
+      ].map do |input, expected_arrangements|
+        arrangements = expected_arrangements.map do |arrangement|
+          arrangement.map(&to_tiles).map(&:tiles)
+        end
+        [input, arrangements]
       end
 
       test_cases.each do |tiles, expected|
-        tiles.sets.must_equal(expected, "input: #{tiles}")
+        actual = Tiles.arrangements(tiles)
+        actual.must_equal(expected,
+          "input: #{tiles}, expected: #{expected.to_tile_strings}, actual: #{actual.to_tile_strings}")
       end
     end
 
     it "random hand test: all returned sets are really sets" do
       10000.times do |n|
-        hand = Tiles.new(Tile.deck.sample(14))
-        hand.sets.each do |set|
-          Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+        hand = Tile.deck.sample(14)
+        Tiles.arrangements(hand).each do |arrangement|
+          arrangement.each do |set|
+            Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand.to_tile_strings}")
+          end
         end
       end
     end
@@ -118,10 +135,10 @@ describe Tiles do
     end
   end
 
-  describe "chow_start?" do
+  describe "initial_chow" do
     it "works" do
       tiles = Tiles.from_s("7s 8s 8s 8s 9s 1m").tiles
-      Tiles.chow_start?(tiles).must_equal(true)
+      Tiles.initial_chow(tiles).must_equal(Tiles.from_s("7s 8s 9s").tiles)
     end
   end
 

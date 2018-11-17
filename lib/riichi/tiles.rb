@@ -64,7 +64,7 @@ module Riichi
         end
 
         # update if sequence continues with next tile
-        if tiles[next_idx] == tiles[curr_idx].next_in_suit
+        if tiles[next_idx] && tiles[next_idx] == tiles[curr_idx].next_in_suit
           sequence_length += 1
           curr_idx = next_idx
           next_idx += 1
@@ -109,18 +109,18 @@ module Riichi
       self.set? tiles
     end
 
-    def sets
-      []
-    end
-
     def self.matches?(set, tile)
       set.empty? ||
       (set.length == 1 && tile == set.last || tile == set.last.next_in_suit) ||
       Tiles.set?(set + [tile])
     end
 
-    def self.arr(str)
-      _arr(0, [], [], Tiles.from_s(str).tiles)
+    def self.arrangements(tiles)
+      tile_array = case tiles
+        when String then Tiles.from_s(tiles).tiles
+        when Array then Tiles.new(tiles).tiles
+        end
+      _arr(0, [], [], tile_array)
     end
 
     # acc - list of arrangements
