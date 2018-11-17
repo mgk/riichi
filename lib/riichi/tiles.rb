@@ -127,52 +127,23 @@ module Riichi
     # arrangement - list of sets
     # set - list of tiles
     def self._arr(level, acc, arrangement, remaining)
-      puts
-      pr = lambda do |s|
-        if level == 0
-          puts ("(#{level}) " + "    " * level) + s
-        end
-      end
-      pr.call("       acc: #{acc.to_tile_strings}")
-      pr.call("arrangement: #{arrangement.to_tile_strings}")
-      pr.call(" remaining: #{remaining.to_tile_strings}")
       if remaining.empty?
-        pr.call("      ans1: #{acc.to_tile_strings}")
         return acc + [arrangement]
       end
 
-      isets = initial_sets(remaining)
-      pr.call("     isets: #{isets.to_tile_strings}")
-
-      combos = isets.map {|c| [c, Tiles.diff(remaining, c)]}
-      pr.call("    combos: #{combos.to_tile_strings}")
+      combos = initial_sets(remaining).map {|c| [c, Tiles.diff(remaining, c)]}
 
       if combos.empty?
-        pr.call("      empty")
         return _arr(level + 1, acc, arrangement, remaining.drop(1))
       else
         ans = combos.flat_map do |set, rest|
-          pr.call("     combo: #{set.to_tile_strings}--#{rest.to_tile_strings}")
-          cans = _arr(level + 1, acc, arrangement + [set], rest)
-          pr.call("combo ans: #{cans.to_tile_strings}")
-          cans
+          _arr(level + 1, acc, arrangement + [set], rest)
         end
 
-        pr.call("      ans2: #{ans.to_tile_strings}")
         return ans
       end
     end
 
   end
 
-  class Arr
-    attr_accessor :sets, :strays
-    def initialize(sets, strays)
-      @sets = sets
-      @strays = strays
-    end
-    def to_s
-      "sets: #{sets.to_tile_strings}, strays: #{strays.to_tile_strings}"
-    end
-  end
 end
