@@ -116,12 +116,17 @@ module Riichi
       Tiles.set?(set + [tile])
     end
 
+    $T
     def self.arrangements(tiles)
       tile_array = case tiles
         when String then Tiles.from_s(tiles).tiles
         when Array then Tiles.new(tiles).tiles
-        end
-      arrs = _arr(0, [], [], tile_array).reject { |x| x.empty? }
+      end
+
+      $T = Time.now
+      p $T - Time.now
+
+      arrs = _arr(0, Set.new, [], tile_array).reject { |x| x.empty? }
         .to_set
         .sort_by(&:length)
         .reverse
@@ -138,6 +143,9 @@ module Riichi
     # arrangement - list of sets
     # set - list of tiles
     def self._arr(level, acc, arrangement, remaining)
+      # t = Time.now
+      # puts "[#{level}]@#{t - $T} acc=#{acc.inspect}, arr=#{arrangement.inspect} rem=#{remaining.inspect}"
+      # $T = t
       if remaining.empty?
         return acc + [arrangement]
       end
