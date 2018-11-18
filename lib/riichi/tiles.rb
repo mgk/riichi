@@ -120,7 +120,7 @@ module Riichi
         when String then Tiles.from_s(tiles).tiles
         when Array then Tiles.new(tiles).tiles
         end
-      _arr(0, [], [], tile_array)
+      _arr(0, [], [], tile_array).reject { |x| x.empty? }.to_set
     end
 
     # acc - list of arrangements
@@ -133,15 +133,11 @@ module Riichi
 
       combos = initial_sets(remaining).map {|c| [c, Tiles.diff(remaining, c)]}
 
-      if combos.empty?
-        return _arr(level + 1, acc, arrangement, remaining.drop(1))
-      else
-        ans = combos.flat_map do |set, rest|
-          _arr(level + 1, acc, arrangement + [set], rest)
-        end
-
-        return ans
+      kids = combos.flat_map do |set, rest|
+        _arr(level + 1, acc, arrangement + [set], rest)
       end
+
+      return _arr(level + 1, acc + kids, arrangement, remaining.drop(1))
     end
 
   end

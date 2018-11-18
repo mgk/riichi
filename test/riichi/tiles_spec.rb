@@ -87,10 +87,10 @@ describe Tiles do
   describe "sets" do
     it "determines all chows and pungs in tiles" do
       test_cases = [
-        ["",                  [[]]  ],
-        ["W W N B 1p 2p 4p",   [[]]  ],
+        ["",                   []  ],
+        ["W W N B 1p 2p 4p",   []  ],
         ["1p 2p 3p",           [["1p 2p 3p"]] ],
-# fix       ["1p 2p 3p 4p",        [["1p 2p 3p"], ["2p 3p 4p"]]  ],
+        ["1p 2p 3p 4p",        [["1p 2p 3p"], ["2p 3p 4p"]]  ],
         ["1p 1p 2p 3p",        [["1p 2p 3p"]]  ],
         ["1p 1p 1p 2p 3p 4p",  [["1p 2p 3p"], ["1p 1p 1p", "2p 3p 4p"]]  ],
 
@@ -106,13 +106,13 @@ describe Tiles do
 
       test_cases.each do |tiles, expected|
         actual = Tiles.arrangements(tiles)
-        actual.must_equal(expected,
+        actual.sort.must_equal(expected.sort,
           "input: #{tiles}, expected: #{expected.to_tile_strings}, actual: #{actual.to_tile_strings}")
       end
     end
 
     it "random hand test: all returned sets are really sets" do
-      10000.times do |n|
+      1000.times do |n|
         hand = Tile.deck.sample(14)
         Tiles.arrangements(hand).each do |arrangement|
           arrangement.each do |set|

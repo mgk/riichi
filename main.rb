@@ -29,9 +29,9 @@ Riichi::Tiles.initial_chow(Riichi::Tiles.from_s("8m 9m 9m").tiles)
   # "1s 1s 1s 2s 2s 2s",
   # "1s 1s 1s 2s 3s",
   # "1s 1s 1s 2s 3s 5m 6m 7m",
-  # "1s 1s 1s 2s 3s 4s N",
-  "3p 4p 5p 5p 7p 2s 6s 8s 8s 3m 6m 8m 9m 9m",
-#  "8s 1s 4p W 9m 8s W 8p 1m 3s 5m 8m 9m 9m"
+  "1s 1s 1s 2s 3s 4s N",
+  # "3p 4p 5p 5p 7p 2s 6s 8s 8s 3m 6m 8m 9m 9m",
+  # "8s 1s 4p W 9m 8s W 8p 1m 3s 5m 8m 9m 9m"
 ].each do |s|
   puts "Tiles: #{Riichi::Tiles.from_s(s)}"
   arrangements = Riichi::Tiles.arrangements(s)
@@ -47,7 +47,7 @@ Riichi::Tiles.initial_chow(Riichi::Tiles.from_s("8m 9m 9m").tiles)
   puts "--\n\n"
 end
 
-100000.times do |n|
+0.times do |n|
   hand = Riichi::Tile.deck.sample(14)
   begin
     Riichi::Tiles.arrangements(hand).each do |arrangement|
