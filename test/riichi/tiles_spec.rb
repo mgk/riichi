@@ -94,8 +94,12 @@ describe Tiles do
         ["1p 1p 2p 3p",        [["1p 2p 3p"]]  ],
         ["1p 1p 1p 2p 3p 4p",  [["1p 2p 3p"], ["1p 1p 1p", "2p 3p 4p"]]  ],
 
-# fix        ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
-#           [["7s 8s 9s", "8s 8s 8s", "1m 1m 3m"]]  ]
+        ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
+          [
+            ["7s 8s 9s", "1m 2m 3m"],
+            ["8s 8s 8s", "1m 2m 3m"]
+          ]
+        ]
 
       ].map do |input, expected_arrangements|
         arrangements = expected_arrangements.map do |arrangement|
@@ -123,12 +127,12 @@ describe Tiles do
     end
 
    it "random hand test: all sets are found" do
-      0.times do |n|
-        hand = Tiles.new(Tile.deck.sample(14))
-        hand.sets.each do |set|
-          Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
-          (hand - Tiles.new(set)).tiles.combination(3) do |group|
-            Tiles.set?(group).must_equal(false, "n=[#{n}] missed set #{set} for #{hand}")
+      1000.times do |n|
+        hand = Tile.deck.sample(14)
+        Tiles.arrangements(hand).each do |arrangement|
+          leftovers = Tiles.diff(hand, arrangement)
+          leftovers.combination(3) do |group|
+            Tiles.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")
           end
         end
       end

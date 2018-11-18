@@ -23,8 +23,9 @@ module Riichi
       Tiles.new(tiles)
     end
 
+    # b is Array of Tiles or Array of Array of Tiles
     def self.diff(a, b)
-      (Tiles.new(a) - Tiles.new(b)).tiles
+      (Tiles.new(a) - Tiles.new([b].flatten)).tiles
     end
 
     def -(other)
@@ -120,7 +121,17 @@ module Riichi
         when String then Tiles.from_s(tiles).tiles
         when Array then Tiles.new(tiles).tiles
         end
-      _arr(0, [], [], tile_array).reject { |x| x.empty? }.to_set
+      arrs = _arr(0, [], [], tile_array).reject { |x| x.empty? }
+        .to_set
+        .sort_by(&:length)
+        .reverse
+        .reduce([]) do |acc, arr|
+          if acc.map(&:to_set).any? { |prev| prev.superset? arr.to_set }
+            acc
+          else
+            acc + [arr]
+          end
+        end
     end
 
     # acc - list of arrangements
@@ -132,7 +143,6 @@ module Riichi
       end
 
       combos = initial_sets(remaining).map {|c| [c, Tiles.diff(remaining, c)]}
-
       kids = combos.flat_map do |set, rest|
         _arr(level + 1, acc, arrangement + [set], rest)
       end

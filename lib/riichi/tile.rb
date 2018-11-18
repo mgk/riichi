@@ -19,6 +19,10 @@ module Riichi
       str
     end
 
+    def inspect
+      str
+    end
+
     def self.from_s(str)
       @tiles_by_str.fetch(str)
     end
