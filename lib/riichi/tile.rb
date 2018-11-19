@@ -43,6 +43,12 @@ module Riichi
       suit && !terminal?
     end
 
+    def connects?(other)
+      other &&
+        (self == other ||
+          (suit && suit == other.suit && (rank - other.rank).abs <= 2))
+    end
+
     def next_in_suit
       if suited? && rank < 9
         Tile.from_s("#{rank + 1}#{suit[0]}")

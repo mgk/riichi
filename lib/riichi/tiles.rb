@@ -52,6 +52,27 @@ module Riichi
       [tile, tile.next_in_suit, tile.next_in_suit.next_in_suit]
     end
 
+    # Find connectors in sorted tiles
+    def self.connectors(tiles)
+      self._conn([], tiles)
+    end
+
+    def self._conn(acc, remaining)
+      if remaining.empty?
+        return acc
+      end
+
+      head, *tail = remaining
+
+      if head.connects?(tail.first)
+        _conn(acc + [head, tail.first], tail.drop(1))
+      elsif head.connects?(acc.last)
+        _conn(acc + [head], tail)
+      else
+        _conn(acc, tail)
+      end
+    end
+
     def self.initial_chow(tiles)
       sequence_length = 1
       curr_idx = 0
@@ -116,15 +137,21 @@ module Riichi
       Tiles.set?(set + [tile])
     end
 
-    def self.arrangements(tiles)
-      tile_array = case tiles
-        when String then Tiles.from_s(tiles).tiles
-        when Array then Tiles.new(tiles).tiles
+    def self.arrangements(tile_input)
+      tiles = case tile_input
+        when String then Tiles.from_s(tile_input).tiles
+        when Array then Tiles.new(tile_input).tiles
       end
 
-      # remove non-maximal arrangments: an arrangement is not
-      # maximal if it is a subset of any other arrangement
-      _arr(0, [], [], tile_array).reject { |x| x.empty? }
+      tiles = connectors(tiles)
+      arrangements = _arr(0, [], [], tiles)
+      _remove_non_maximal_arrangements(arrangements)
+    end
+
+    # an arrangement is non-maximal if it is a subset
+    # of any other arrangement
+    def self._remove_non_maximal_arrangements(arrangements)
+      arrangements.reject { |x| x.empty? }
       .to_set
       .sort_by(&:length)
       .reverse
