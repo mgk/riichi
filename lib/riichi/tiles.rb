@@ -116,46 +116,44 @@ module Riichi
       Tiles.set?(set + [tile])
     end
 
-    $T
     def self.arrangements(tiles)
       tile_array = case tiles
         when String then Tiles.from_s(tiles).tiles
         when Array then Tiles.new(tiles).tiles
       end
 
-      $T = Time.now
-      p $T - Time.now
-
-      arrs = _arr(0, Set.new, [], tile_array).reject { |x| x.empty? }
-        .to_set
-        .sort_by(&:length)
-        .reverse
-        .reduce([]) do |acc, arr|
-          if acc.map(&:to_set).any? { |prev| prev.superset? arr.to_set }
-            acc
-          else
-            acc + [arr]
-          end
+      # remove non-maximal arrangments: an arrangement is not
+      # maximal if it is a subset of any other arrangement
+      _arr(0, [], [], tile_array).reject { |x| x.empty? }
+      .to_set
+      .sort_by(&:length)
+      .reverse
+      .reduce([]) do |acc, arr|
+        if acc.map(&:to_set).any? { |prev| prev.superset? arr.to_set }
+          acc
+        else
+          acc + [arr]
         end
+      end
     end
 
     # acc - list of arrangements
     # arrangement - list of sets
     # set - list of tiles
     def self._arr(level, acc, arrangement, remaining)
-      # t = Time.now
-      # puts "[#{level}]@#{t - $T} acc=#{acc.inspect}, arr=#{arrangement.inspect} rem=#{remaining.inspect}"
-      # $T = t
       if remaining.empty?
         return acc + [arrangement]
       end
 
-      combos = initial_sets(remaining).map {|c| [c, Tiles.diff(remaining, c)]}
-      kids = combos.flat_map do |set, rest|
+      # arrangements starting with matching sets
+      initial_arrangements = initial_sets(remaining).map do |set|
+        [set, Tiles.diff(remaining, set)]
+      end
+      .flat_map do |set, rest|
         _arr(level + 1, acc, arrangement + [set], rest)
       end
 
-      return _arr(level + 1, acc + kids, arrangement, remaining.drop(1))
+      return initial_arrangements + _arr(level + 1, acc, arrangement, remaining.drop(1))
     end
 
   end

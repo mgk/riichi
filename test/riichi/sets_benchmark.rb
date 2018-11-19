@@ -5,8 +5,8 @@ require 'riichi'
 
 class SetsBenchmark < Minitest::Benchmark
   def self.bench_range
-    range = [1000, 10_000, 100_000, 1_000_000]
-    puts "using bench_range: #{range}\n\n"
+    range = [1000, 10_000, 10_000, 100_000]
+    puts "iterations:\t #{range.join("\t\t ")}\n\n"
     range
   end
 
