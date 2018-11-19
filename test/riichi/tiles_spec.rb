@@ -1,17 +1,5 @@
 require 'spec_helper'
 
-class Array
-  def to_tile_strings
-    self.map do |x|
-      case x
-      when Riichi::Tile then x.to_s
-      when Array then x.to_tile_strings
-      else x
-      end
-    end
-  end
-end
-
 describe Tiles do
 
   to_tile = lambda { |str| Tile.from_s(str) }
@@ -84,7 +72,7 @@ describe Tiles do
     end
   end
 
-  describe "sets" do
+  describe "arrangements" do
     it "determines all chows and pungs in tiles" do
       test_cases = [
         ["",                   []  ],
@@ -97,39 +85,59 @@ describe Tiles do
         ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m S",
           [
             ["7s 8s 9s", "1m 2m 3m"],
-            ["8s 8s 8s", "1m 2m 3m"]
+            ["8s 8s 8s", "1m 2m 3m"],
           ]
-        ]
+        ],
+
+        ["2p 3p 4p 5p 5p 5p 6p 6p 7p 8p 9p 6m E F",
+          [
+            ["2p 3p 4p", "5p 5p 5p", "6p 7p 8p"],
+            ["2p 3p 4p", "5p 5p 5p", "7p 8p 9p"],
+            ["2p 3p 4p", "5p 6p 7p"],
+            ["3p 4p 5p", "5p 6p 7p"],
+            ["3p 4p 5p", "6p 7p 8p"],
+            ["3p 4p 5p", "7p 8p 9p"],
+            ["4p 5p 6p", "5p 6p 7p"],
+            ["4p 5p 6p", "6p 7p 8p"],
+            ["4p 5p 6p", "7p 8p 9p"],
+          ]
+        ],
 
       ].map do |input, expected_arrangements|
         arrangements = expected_arrangements.map do |arrangement|
           arrangement.map(&to_tiles).map(&:tiles)
         end
-        [input, arrangements]
+        [Tiles.from_s(input).tiles, arrangements]
       end
 
       test_cases.each do |tiles, expected|
         actual = Tiles.arrangements(tiles)
-        actual.sort.must_equal(expected.sort,
-          "input: #{tiles}, expected: #{expected.to_tile_strings}, actual: #{actual.to_tile_strings}")
-      end
-    end
-
-    it "random hand test: all returned sets are really sets" do
-      1000.times do |n|
-        hand = Tile.deck.sample(14)
-        Tiles.arrangements(hand).each do |arrangement|
-          arrangement.each do |set|
-            Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand.to_tile_strings}")
-          end
+        leftovers = Tiles.diff(tiles, actual)
+        leftovers.combination(3) do |group|
+          Tiles.set?(group).must_equal(false, "missed set #{group} for #{tiles}")
         end
+
+        actual.sort.must_equal(expected.sort, "input: #{tiles}")
       end
     end
 
-   it "random hand test: all sets are found" do
-      1000.times do |n|
+    RIICHI_TEST_HAND_COUNT = (ENV["RIICHI_TEST_HAND_COUNT"] || "1000").to_i
+
+    it "random hand test - (#{RIICHI_TEST_HAND_COUNT} iterations)" do
+      RIICHI_TEST_HAND_COUNT.times do |n|
         hand = Tile.deck.sample(14)
+
         Tiles.arrangements(hand).each do |arrangement|
+          # all sets in the arrangement must really be sets
+          arrangement.each do |set|
+            Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+          end
+
+          # all arrangement tiles exist in the hand
+          Tiles.diff(arrangement.sum([]), hand)
+          .must_be_empty("too many tiles in arrangement #{arrangement} for #{hand}")
+
+          # the leftovers contain no sets
           leftovers = Tiles.diff(hand, arrangement)
           leftovers.combination(3) do |group|
             Tiles.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")

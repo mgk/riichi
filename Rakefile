@@ -4,13 +4,15 @@ require 'rake/clean'
 
 CLEAN.include 'coverage'
 
-Rake::TestTask.new(:default) do |t|
+Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
   t.pattern = 'test/**/*_spec.rb'
 end
-desc 'Run tests'
+
+task :default => :test
 
 Rake::TestTask.new(:bench) do |t|
+  t.description = 'Run benchmarks'
   t.libs << 'test'
   t.pattern = 'test/**/*_benchmark.rb'
 end
