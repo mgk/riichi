@@ -25,17 +25,19 @@ module Riichi
 
     # b is Array of Tiles or Array of Array of Tiles
     def self.diff(a, b)
-      (Tiles.new(a) - Tiles.new([b].flatten)).tiles
+      answer = a.dup
+      subtrahend = [b].flatten
+
+      subtrahend.each do |t|
+        if (index = answer.index(t))
+          answer.delete_at(index)
+        end
+      end
+      answer
     end
 
     def -(other)
-      result = tiles.dup
-      other.tiles.each do |t|
-        if (index = result.index(t))
-          result.delete_at(index)
-        end
-      end
-      Tiles.new(result)
+      Tiles.new(Tiles.diff(tiles, other.tiles))
     end
 
     def self.pung?(tiles)
@@ -54,23 +56,11 @@ module Riichi
 
     # Find connectors in sorted tiles
     def self.connectors(tiles)
-      self._conn([], tiles)
-    end
-
-    def self._conn(acc, remaining)
-      if remaining.empty?
-        return acc
+      tiles.each_with_index.find_all do |tile, idx|
+        tile.connects?(tiles.fetch(idx - 1, nil)) ||
+          tile.connects?(tiles.fetch(idx + 1, nil))
       end
-
-      head, *tail = remaining
-
-      if head.connects?(tail.first)
-        _conn(acc + [head, tail.first], tail.drop(1))
-      elsif head.connects?(acc.last)
-        _conn(acc + [head], tail)
-      else
-        _conn(acc, tail)
-      end
+      .map { |tile, idx| tile }
     end
 
     def self.initial_chow(tiles)

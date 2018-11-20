@@ -3,7 +3,6 @@ require 'riichi'
 
 # Harness for debugging until I get debugging working in tests
 
-
 def t(s); Riichi::Tiles.from_s(s).tiles; end
 
 p Riichi::Tiles.connectors(t('1s 2s 3s 4s'))
