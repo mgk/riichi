@@ -4,6 +4,14 @@ Richii Mah Jong hand calculator.
 
 To experiment, run `bin/console` for an interactive prompt.
 
+# TODO
+
+- complete hand check, add in special hands
+- kong
+- draw and play something
+- scoring with stated bonuses
+- counting bonuses
+
 ## Installation
 
 Add this line to your application's Gemfile:
