@@ -1,0 +1,3 @@
+#!/bin/bash
+
+jruby -J-XstartOnFirstThread shoes_app.rb
