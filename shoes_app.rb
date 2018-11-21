@@ -50,7 +50,7 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
 
   def layout_tiles(tiles, selectable: true)
     @tiles = tiles.each_with_index.map do |tile_name, idx|
-      tile = layout_tile(tile_name, TILE_WIDTH, idx * TILE_WIDTH)
+      tile = layout_tile(tile_name, width: TILE_WIDTH, left: idx * TILE_WIDTH)
       if selectable
         tile.click do
           toggle_selected(idx)
@@ -62,7 +62,7 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
 
   def draw
     left = TILE_WIDTH * @g.hand.size + TILE_WIDTH / 2
-    tile = layout_tile(@g.deal_tile, TILE_WIDTH, left)
+    tile = layout_tile(@g.deal_tile, width: TILE_WIDTH, left: left)
     @tiles << tile
     tile.click do
       toggle_selected(@g.hand.size - 1)
@@ -72,16 +72,19 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
 
   def discard
     info "discard [#{@selected}] - #{@g.hand[@selected]}"
+    @discards.append do
+      layout_tile(@g.hand[@selected], width: TILE_WIDTH, margin: 1)
+    end
     @g.hand.delete_at @selected
     clear_selection
     @g.hand.sort!
     refresh_hand
   end
 
-  def layout_tile(tile_name, width, left)
-    stack(:width => width, :left => left, :margin => 5) do
+  def layout_tile(tile_name, width:, left: nil, margin: 5)
+    stack(:width => width, :left => left, :margin => margin) do
       border black
-      image("images/#{tile_name}.png", :width => width - 10)
+      image("images/#{tile_name}.png", :width => width - margin * 2)
     end
   end
 
@@ -119,32 +122,24 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
   new_game
 
   stack :margin => 10 do
-    banner "Riichi"
-    @remaining = caption "remaining: #{@g.deck.size}"
-
-    stack do
-      @hand = flow :margin_top => 40, :margin_bottom => 40
-    end
+    @hand = flow :margin_top => 40, :margin_bottom => 40
 
     flow do
-      button "Deal" do
-        @hand.clear do
-          deal
+      @discards = flow :width => 700
+      stack :width => 200 do
+        flow do
+          @draw_button = button "Draw" do
+            @hand.append do
+              draw
+            end
+          end
+          @discard_button = button "Discard" do
+            discard
+          end
         end
+        @remaining = caption "remaining: #{@g.deck.size}"
       end
-      @draw_button = button "Draw" do
-        @hand.append do
-          draw
-        end
-      end
-      @discard_button = button "Discard" do
-        discard
-      end
-      button "Restart" do
-        @hand.clear
-        new_game
-        @remaining.text = "remaining: #{@g.deck.size}"
-      end
+
     end
   end
 
