@@ -30,6 +30,9 @@ class Game
     Riichi::Tiles.arrangements(@hand)
   end
 
+  def leftovers(arrangement)
+    Riichi::Tiles.diff(@hand, arrangement)
+  end
 end
 
 TILE_WIDTH = 50
@@ -43,14 +46,16 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
     refresh
     @arrangements.clear do
       @g.arrangements.each do |arrangement|
-        flow do
+        flow :margin_top => 10 do
           loc = 0
+          leftovers = @g.leftovers(arrangement)
+          info leftovers
           arrangement.each do |set|
             set.each do |tile|
-              layout_tile(tile, width: TILE_WIDTH, left: loc)
+              layout_tile(tile, width: TILE_WIDTH, left: loc, margin: 1)
               loc += TILE_WIDTH
             end
-            loc += TILE_WIDTH / 2
+            loc += TILE_WIDTH / 3
           end
         end
       end
@@ -178,4 +183,14 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
   @arrangements = stack
 
   refresh_hand
+
+  keypress do |key|
+    if key == "r"
+      @hand.clear
+      @arrangements.clear
+      @discards.clear
+      new_game
+      refresh_hand
+    end
+  end
 end
