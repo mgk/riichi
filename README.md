@@ -58,14 +58,12 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/mgk/ri
 https://en.wikipedia.org/wiki/Mahjong_tiles
 
 ### Individual Tile Symbols
-🀀🀁🀂🀃🀅 🀆🀫🀄︎a
-🀇🀈🀉🀊🀋🀌🀍🀎🀏
-🀐 🀑 🀒 🀓🀔🀕🀖🀗🀘
-🀙🀚🀛🀜🀝🀞🀟🀠🀡
+
+There are unicode points for each tile but they do not work well in most contexts.
 
 ### Character Symbols
-- 筒 pinzu
-- 索 sozu
+- 筒 pinzu  ( maybe visual use ⨷ )
+- 索 sozu   ( maybe visual use ‖ )
 - 萬 manzu
 
 - 東 east ton

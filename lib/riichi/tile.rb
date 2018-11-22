@@ -2,16 +2,16 @@ module Riichi
   class Tile
     include Comparable
 
-    attr_reader :type, :suit, :rank, :wind, :dragon, :str
+    attr_reader :type, :suit, :rank, :wind, :dragon, :str, :pretty
 
-    def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil)
+    def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil)
       @type = type
       @suit = suit
       @rank = rank
       @wind = wind
       @dragon = dragon
       @str = str
-
+      @pretty = pretty
       freeze
     end
 
@@ -60,25 +60,28 @@ module Riichi
     end
 
     def self.tile_types
-      suited_tiles = [:pinzu, :sozu, :manzu].flat_map do |suit|
+      suited_tiles = [
+        [:pinzu, '⨷'], [:sozu, '‖'], [:manzu, '萬']
+      ].flat_map do |suit, pretty|
         (1..9).map do |rank|
-          Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}")
+          Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}", pretty: "#{rank}#{pretty}")
         end
       end
 
       honors = [
-        Tile.new(wind:   :east,  str: 'E'),  # 東
-        Tile.new(wind:   :south, str: 'S'),  # 南
-        Tile.new(wind:   :west,  str: 'W'),  # 西
-        Tile.new(wind:   :north, str: 'N'),  # 北
-        Tile.new(dragon: :red,   str: 'C'),  # 中 - (pinyin chung)
-        Tile.new(dragon: :white, str: 'B'),  # 白 - (pingyin bai)
-        Tile.new(dragon: :green, str: 'F'),  # 發 - (pinyin fa)
+        Tile.new(wind:   :east,  str: 'Ew', pretty: '東'),
+        Tile.new(wind:   :south, str: 'Sw', pretty: '南'),
+        Tile.new(wind:   :west,  str: 'Ww', pretty: '西'),
+        Tile.new(wind:   :north, str: 'Nw', pretty: '北'),
+        Tile.new(dragon: :red,   str: 'Rd', pretty: '中'),
+        Tile.new(dragon: :white, str: 'Wd', pretty: '白'),
+        Tile.new(dragon: :green, str: 'Gd', pretty: '發'),
       ]
 
       (suited_tiles + honors).each_with_index.map do |t, i|
-        Tile.new(type: i,
+        Tile.new(type: i + 1,
                  str: t.str,
+                 pretty: t.pretty,
                  suit: t.suit,
                  rank: t.rank,
                  wind: t.wind,

@@ -6,10 +6,10 @@ describe Tile do
 
   describe "from_s" do
     it "works for a wind" do
-      t = Tile.from_s('W')
+      t = Tile.from_s('Ww')
       t.suit.must_be_nil
       t.rank.must_be_nil
-      t.str.must_equal 'W'
+      t.str.must_equal 'Ww'
       t.wind.must_equal :west
       t.dragon.must_be_nil
     end
@@ -27,8 +27,8 @@ describe Tile do
 
   describe "Comparable" do
     it "should sort properly" do
-      unsorted = '1m 2p 3s 2s 3m 2m 1s 1m B B F N E W S'
-      sorted   = '2p 1s 2s 3s 1m 1m 2m 3m E S W N B B F'
+      unsorted = '1m 2p 3s 2s 3m 2m 1s 1m Wd Wd Gd Nw Ew Ww Sw'
+      sorted   = '2p 1s 2s 3s 1m 1m 2m 3m Ew Sw Ww Nw Wd Wd Gd'
 
       unsorted.split(' ').map(&to_tile).sort.join(' ').must_equal sorted
     end
