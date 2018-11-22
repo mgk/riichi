@@ -87,7 +87,7 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
     tile.click do
       toggle_selected(@g.hand.size - 1)
     end
-    refresh
+    toggle_selected(@g.hand.size - 1)
   end
 
   def discard
@@ -152,11 +152,19 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
             @hand.append do
               draw
             end
+            refresh
           end
           @discard_button = button "Discard" do
             discard
+            @hand.append do
+              draw
+            end
+            refresh
           end
           button "Restart" do
+            @hand.clear
+            @arrangements.clear
+            @discards.clear
             new_game
             refresh_hand
           end
