@@ -1,4 +1,21 @@
 require 'riichi/tile'
+require 'set'
+
+class Array
+  def delete_elements_in(ary)
+    ary.each do |x|
+      if index = index(x)
+        delete_at(index)
+      end
+    end
+  end
+
+  def contains_all?(other)
+    leftovers = other.dup
+    leftovers.delete_elements_in(self)
+    leftovers.empty?
+  end
+end
 
 module Riichi
   class Tiles
@@ -28,11 +45,7 @@ module Riichi
       answer = a.dup
       subtrahend = [b].flatten
 
-      subtrahend.each do |t|
-        if (index = answer.index(t))
-          answer.delete_at(index)
-        end
-      end
+      answer.delete_elements_in(subtrahend)
       answer
     end
 
@@ -146,7 +159,7 @@ module Riichi
       .sort_by(&:length)
       .reverse
       .reduce([]) do |acc, arr|
-        if acc.map(&:to_set).any? { |prev| prev.superset? arr.to_set }
+        if acc.any? { |prev| prev.contains_all? arr }
           acc
         else
           acc + [arr]

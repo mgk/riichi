@@ -82,6 +82,15 @@ describe Tiles do
         ["1p 1p 2p 3p",           [["1p 2p 3p"]]  ],
         ["1p 1p 1p 2p 3p 4p",     [["1p 2p 3p"], ["1p 1p 1p", "2p 3p 4p"]]  ],
 
+        ["2m 2m 3m 3m 4m 4m",     [["2m 3m 4m", "2m 3m 4m"]]  ],
+        ["2m 2m 3m 3m 4m 4m 5m",
+          [
+            ["2m 3m 4m", "2m 3m 4m"],
+            ["2m 3m 4m", "3m 4m 5m"],
+
+          ]
+        ],
+
         ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m Sw",
           [
             ["7s 8s 9s", "1m 2m 3m"],
