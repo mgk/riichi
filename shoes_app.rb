@@ -1,5 +1,6 @@
 require 'shoes'
 require 'riichi'
+require 'set'
 
 # use shoes4 to run
 # https://github.com/shoes/shoes4
@@ -16,7 +17,6 @@ class Game
 
   def deal_hand
     @hand = @deck.shift(13).sort
-    @app.info hand
   end
 
   def deal_tile
@@ -24,9 +24,15 @@ class Game
     @hand << tile
     tile
   end
+
+  def arrangements
+    @app.info @hand
+    Riichi::Tiles.arrangements(@hand)
+  end
+
 end
 
-TILE_WIDTH = 60
+TILE_WIDTH = 50
 
 Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
 
@@ -35,6 +41,20 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
       layout_tiles(@g.hand)
     end
     refresh
+    @arrangements.clear do
+      @g.arrangements.each do |arrangement|
+        flow do
+          loc = 0
+          arrangement.each do |set|
+            set.each do |tile|
+              layout_tile(tile, width: TILE_WIDTH, left: loc)
+              loc += TILE_WIDTH
+            end
+            loc += TILE_WIDTH / 2
+          end
+        end
+      end
+    end
   end
 
   def refresh
@@ -73,7 +93,7 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
   def discard
     info "discard [#{@selected}] - #{@g.hand[@selected]}"
     @discards.append do
-      layout_tile(@g.hand[@selected], width: TILE_WIDTH, margin: 1)
+      layout_tile(@g.hand[@selected], width: TILE_WIDTH, margin: 0)
     end
     @g.hand.delete_at @selected
     clear_selection
@@ -81,8 +101,8 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
     refresh_hand
   end
 
-  def layout_tile(tile_name, width:, left: nil, margin: 5)
-    stack(:width => width, :left => left, :margin => margin) do
+  def layout_tile(tile_name, width:, left: nil, margin: 1, margin_left: nil)
+    stack(:width => width, :left => left, :margin => margin, :margin_left => margin_left) do
       border black
       image("images/#{tile_name}.png", :width => width - margin * 2)
     end
@@ -136,12 +156,18 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
           @discard_button = button "Discard" do
             discard
           end
+          button "Restart" do
+            new_game
+            refresh_hand
+          end
         end
         @remaining = caption "remaining: #{@g.deck.size}"
       end
 
     end
   end
+
+  @arrangements = stack
 
   refresh_hand
 end
