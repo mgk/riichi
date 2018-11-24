@@ -31,7 +31,9 @@ class Game
   end
 
   def leftovers(arrangement)
-    Riichi::Tiles.diff(@hand, arrangement)
+    x = Riichi::Tiles.diff(@hand, arrangement)
+    @app.info "left #{x}"
+    x
   end
 end
 
@@ -48,14 +50,17 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
       @g.arrangements.each do |arrangement|
         flow :margin_top => 10 do
           loc = 0
-          leftovers = @g.leftovers(arrangement)
-          info leftovers
           arrangement.each do |set|
             set.each do |tile|
               layout_tile(tile, width: TILE_WIDTH, left: loc, margin: 1)
               loc += TILE_WIDTH
             end
             loc += TILE_WIDTH / 3
+          end
+          loc += TILE_WIDTH / 2
+          @g.leftovers(arrangement).each do |tile|
+            layout_tile(tile, width: TILE_WIDTH - 10, left: loc, margin: 1)
+            loc += TILE_WIDTH - 10
           end
         end
       end
@@ -86,24 +91,25 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
   end
 
   def draw
-    left = TILE_WIDTH * @g.hand.size + TILE_WIDTH / 2
+    left = TILE_WIDTH * @g.hand.size
     tile = layout_tile(@g.deal_tile, width: TILE_WIDTH, left: left)
     @tiles << tile
     tile.click do
       toggle_selected(@g.hand.size - 1)
     end
+    refresh_hand
     toggle_selected(@g.hand.size - 1)
   end
 
   def discard
     info "discard [#{@selected}] - #{@g.hand[@selected]}"
     @discards.append do
-      layout_tile(@g.hand[@selected], width: TILE_WIDTH, margin: 0)
+      layout_tile(@g.hand[@selected], width: TILE_WIDTH * 0.8, margin: 0)
     end
     @g.hand.delete_at @selected
     clear_selection
     @g.hand.sort!
-    refresh_hand
+    refresh
   end
 
   def layout_tile(tile_name, width:, left: nil, margin: 1, margin_left: nil)
@@ -191,6 +197,14 @@ Shoes.app :title => "Riichi", :width => 1000, :height => 600 do
       @discards.clear
       new_game
       refresh_hand
+    elsif key == "d"
+      if @discard_button.enabled?
+        discard
+        @hand.append do
+          draw
+        end
+        refresh
+      end
     end
   end
 end
