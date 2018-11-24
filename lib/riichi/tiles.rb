@@ -2,17 +2,31 @@ require 'riichi/tile'
 require 'set'
 
 class Array
-  def delete_elements_in(ary)
-    ary.each do |x|
+  # Delete specified values. Unlike {#-} this method only deletes
+  # the first instance of each specified value.
+
+  # @example
+  #   [1, 2, 2, 3].delete_elements!([1, 2, 42]) #=> [2, 3]
+  #   [1, 2, 2, 3].delete_elements!([2, 2, 3]) #=> [1]
+  def delete_elements!(arr)
+    arr.each do |x|
       if index = index(x)
         delete_at(index)
       end
     end
   end
 
-  def contains_all?(other)
+  # Determines if each of the values in the given array are contained
+  # in self.
+  #
+  # @param [Array] other array to check
+  # @return [true, false]
+  # @example
+  #   [1, 2].includes_all?([1, 2, 2]) #=> false
+  #   [1, 2, 2].includes_all?([2, 2]) #=> true
+  def includes_all?(other)
     leftovers = other.dup
-    leftovers.delete_elements_in(self)
+    leftovers.delete_elements!(self)
     leftovers.empty?
   end
 end
@@ -40,12 +54,21 @@ module Riichi
       Tiles.new(tiles)
     end
 
-    # b is Array of Tiles or Array of Array of Tiles
+    # Subtract Tiles.
+    #
+    # @param [Array<Tile>] a minuend
+    # @param [Array<Tile>, Array<Array<Tile>>] b subtrahend
+    # @return a - b
+    # @example
+    #   def t(s); Tiles.from_s(s).tiles end
+    #
+    #   diff(t('1p 1p 2p 3p'), t('1p 2p')).to_s #=> "[1p 3p]"
+    #   diff(t('1p 1p 2p 3p'), [t('1p'), t('1p 2p')]).to_s #=> "[3p]"
     def self.diff(a, b)
       answer = a.dup
       subtrahend = [b].flatten
 
-      answer.delete_elements_in(subtrahend)
+      answer.delete_elements!(subtrahend)
       answer
     end
 
@@ -67,7 +90,12 @@ module Riichi
       [tile, tile.next_in_suit, tile.next_in_suit.next_in_suit]
     end
 
-    # Find connectors in sorted tiles
+    # Determine the tiles that connect to at least one other
+    # tile in a list.
+    #
+    # @param [Array<Tiles>] tiles tiles to check
+    # @return [Array<Tiles>] tiles that connect to one or more
+    # other tiles
     def self.connectors(tiles)
       tiles.each_with_index.find_all do |tile, idx|
         tile.connects?(tiles.fetch(idx - 1, nil)) ||
@@ -159,7 +187,7 @@ module Riichi
       .sort_by(&:length)
       .reverse
       .reduce([]) do |acc, arr|
-        if acc.any? { |prev| prev.contains_all? arr }
+        if acc.any? { |prev| prev.includes_all? arr }
           acc
         else
           acc + [arr]
@@ -175,7 +203,7 @@ module Riichi
         return acc + [arrangement]
       end
 
-      # arrangements starting with matching sets
+      # arrangements that use the first tile
       initial_arrangements = initial_sets(remaining).map do |set|
         [set, Tiles.diff(remaining, set)]
       end

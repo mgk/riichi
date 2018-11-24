@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 12.3"
   spec.add_development_dependency "minitest-reporters", "~> 1.3"
   spec.add_development_dependency "simplecov", "~> 0.16"
+  spec.add_development_dependency "yard", "~> 0.9.16"
 end

@@ -2,7 +2,26 @@ module Riichi
   class Tile
     include Comparable
 
-    attr_reader :type, :suit, :rank, :wind, :dragon, :str, :pretty
+    # @return [Integer] unique identifier of the tile type.
+    attr_reader :type
+
+    # @return [Symbol] suit identifier (:pinzu, :sozu, or :manzu) if suited
+    attr_reader :suit
+
+    # @return [Integer] rank if suited
+    attr_reader :rank
+
+    # @return [:east, :south, :west, :north] wind identifier if wind
+    attr_reader :wind
+
+    # @return [:red, :white, :green] dragon identifier if dragon
+    attr_reader :dragon
+
+    # @return [String] string representation
+    attr_reader :str
+
+    # @return [String] visual String representation
+    attr_reader :pretty
 
     def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil)
       @type = type
@@ -27,6 +46,7 @@ module Riichi
       @tiles_by_str.fetch(str)
     end
 
+    # @return [true, false] if honor tile
     def honour?
       wind || dragon
     end
@@ -43,6 +63,11 @@ module Riichi
       suit && !terminal?
     end
 
+    # Determine if this tile connects to another tile. Two tiles
+    # connect if they could be part of the same chow or pung.
+    #
+    # @param [Tile] other tile to check
+    # @return [true, false] if the tiles connect
     def connects?(other)
       other &&
         (self == other ||
@@ -93,8 +118,8 @@ module Riichi
       @deck
     end
 
-    @tiles_by_str = tile_types.map { |tt| [tt.str, tt] }.to_h
-    @deck = tile_types * 4
+    @tiles_by_str = tile_types.map { |tt| [tt.str, tt] }.to_h.freeze
+    @deck = (tile_types * 4).freeze
     freeze
   end
 
