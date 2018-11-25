@@ -151,16 +151,16 @@ describe Tile do
       end
     end
 
-    RIICHI_TEST_HAND_COUNT = (ENV["RIICHI_TEST_HAND_COUNT"] || "0").to_i
+    RIICHI_TEST_HAND_COUNT = (ENV["RIICHI_TEST_HAND_COUNT"] || "1000").to_i
 
     it "random hand test - (#{RIICHI_TEST_HAND_COUNT} iterations)" do
       RIICHI_TEST_HAND_COUNT.times do |n|
         hand = Tile.deck.sample(14)
 
-        Tiles.arrangements(hand).each do |arrangement|
+        Tile.arrangements(hand).each do |arrangement|
           # all sets in the arrangement must really be sets
           arrangement.each do |set|
-            Tiles.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+            Tile.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
           end
 
           # all arrangement tiles exist in the hand
@@ -170,34 +170,9 @@ describe Tile do
           # the leftovers contain no sets
           leftovers = Tile.diff(hand, arrangement)
           leftovers.combination(3) do |group|
-            Tiles.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")
+            Tile.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")
           end
         end
-      end
-    end
-  end
-
-  describe "complete?" do
-    it "returns false for incomplete hands" do
-      [
-        "",
-        "1s",
-        "1s 1s 1s",
-        "1s 2s",
-        "1s 1s 1s Wd Gd"
-      ]
-      .each do |hand|
-        Tile.complete?(Tile.to_tiles(hand)).must_equal(false, "'#{hand}' is not complete")
-      end
-    end
-    it "returns true for complete hands" do
-      [
-        "1s 1s",
-        "1s 1s 1s Wd Wd",
-        "1s 2s 3s 4s 5s 6s 7s 7s 7s Ww Ww",
-      ]
-      .each do |hand|
-        Tile.complete?(Tile.to_tiles(hand)).must_equal(true, "'#{hand}' is complete")
       end
     end
   end

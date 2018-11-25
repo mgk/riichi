@@ -202,13 +202,13 @@ module Riichi
     end
 
     def self.arrangements(tiles)
-      tiles = connectors(tiles)
+      tiles = connectors(tiles.sort)
       arrangements = _arr(0, [], [], tiles)
       _remove_non_maximal_arrangements(arrangements)
     end
 
-    # an arrangement is non-maximal if it is a subset
-    # of any other arrangement
+    # An arrangement is non-maximal if it is a subset
+    # of any other arrangement.
     def self._remove_non_maximal_arrangements(arrangements)
       arrangements.reject { |x| x.empty? }
       .to_set
@@ -243,20 +243,6 @@ module Riichi
       return initial_arrangements + _arr(level + 1, acc, arrangement, remaining.drop(1))
     end
     private_class_method :_arr
-
-    def self.complete?(tiles)
-      if Tile.pair?(tiles)
-        return true
-      end
-
-      if tiles.length % 3 != 2
-        return false
-      end
-
-      Tile.arrangements(tiles).any? do |arrangement|
-        Tile.pair?(Tile.diff(tiles, arrangement))
-      end
-    end
 
     def self._tile_types
       suited_tiles = [
