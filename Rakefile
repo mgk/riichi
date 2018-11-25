@@ -2,7 +2,7 @@ require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'rake/clean'
 
-CLEAN.include 'coverage'
+CLEAN.include ['coverage', 'doc']
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'test'

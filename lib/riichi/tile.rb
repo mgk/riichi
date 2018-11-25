@@ -20,7 +20,7 @@ module Riichi
     # @return [String] string representation
     attr_reader :str
 
-    # @return [String] visual String representation
+    # @return [String] pretty string representation
     attr_reader :pretty
 
     def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil)
@@ -39,14 +39,17 @@ module Riichi
       wind || dragon
     end
 
+    # @return [true, false] if suited tile
     def suited?
       suit
     end
 
+    # @return [true, false] if suited end tile
     def terminal?
       [1, 9].include? rank
     end
 
+    # @return [true, false] if suited middle tile
     def simple?
       suit && !terminal?
     end
@@ -62,14 +65,20 @@ module Riichi
           (suit && suit == other.suit && (rank - other.rank).abs <= 2))
     end
 
+    # Get the tile following this tile in the same suit.
+    #
+    # @return [Tile] the following tile or `nil` if self is not suited or is a 9
     def next_in_suit
-      suited? && Tile.to_tile(suit, rank + 1)
+      suited? && Tile.get_tile(suit: suit, rank: rank + 1)
     end
 
     def <=>(other)
       self.type <=> other&.type
     end
 
+    # Get the string representation of this tile.
+    # @see Tile#to_tile
+    # @return [String] the string
     def to_s
       str
     end
@@ -78,8 +87,17 @@ module Riichi
       str
     end
 
-    def self.to_tile(suit, rank = nil)
-      rank ? @suited_tiles[[suit, rank]] : @tiles_by_str.fetch(suit)
+    # Get the tile for a string.
+    #
+    # @param [String] tile string, as returned by {Tile#to_s}
+    # @return [Tile] the specified Tile
+    def self.to_tile(tile)
+      @tiles_by_str.fetch(tile)
+    end
+
+    def self.get_tile(suit: nil, rank: nil, wind: nil, dragon: nil)
+      # TODO: winds and dragons
+      @suited_tiles[[suit, rank]]
     end
 
     def self.to_tiles(str)
@@ -183,18 +201,7 @@ module Riichi
       .map { |tile, idx| tile }
     end
 
-    def self.matches?(set, tile)
-      set.empty? ||
-      (set.length == 1 && tile == set.last || tile == set.last.next_in_suit) ||
-      Tiles.set?(set + [tile])
-    end
-
-    def self.arrangements(tile_input)
-      tiles = case tile_input
-        when String then to_tiles(tile_input)
-        when Array then tile_input
-      end
-
+    def self.arrangements(tiles)
       tiles = connectors(tiles)
       arrangements = _arr(0, [], [], tiles)
       _remove_non_maximal_arrangements(arrangements)
@@ -215,6 +222,7 @@ module Riichi
         end
       end
     end
+    private_class_method :_remove_non_maximal_arrangements
 
     # acc - list of arrangements
     # arrangement - list of sets
@@ -234,6 +242,7 @@ module Riichi
 
       return initial_arrangements + _arr(level + 1, acc, arrangement, remaining.drop(1))
     end
+    private_class_method :_arr
 
     def self.complete?(tiles)
       if Tile.pair?(tiles)
@@ -249,7 +258,7 @@ module Riichi
       end
     end
 
-    def self.tile_types
+    def self._tile_types
       suited_tiles = [
         [:pinzu, '⨷'], [:sozu, '‖'], [:manzu, '萬']
       ].flat_map do |suit, pretty|
@@ -278,17 +287,19 @@ module Riichi
                  dragon: t.dragon)
       end
     end
+    private_class_method :_tile_types
 
     def self.deck
       @deck
     end
 
-    @tiles_by_str = tile_types.map { |t| [t.str, t] }.to_h.freeze
-    @suited_tiles = tile_types.find_all(&:suited?).map do |tile|
+    @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h.freeze
+    @suited_tiles = _tile_types.find_all(&:suited?).map do |tile|
       [[tile.suit, tile.rank], tile]
     end.to_h
-    @deck = (tile_types * 4).freeze
+    @deck = (_tile_types * 4).freeze
     freeze
+
   end
 
 end
