@@ -25,7 +25,7 @@ class SetsBenchmark < Minitest::Benchmark
 
     counts, times = assert_performance validation do |n|
       n.times do
-        Riichi::Tiles.arrangements(Riichi::Tile.deck.sample(14))
+        Riichi::Tile.arrangements(Riichi::Tile.deck.sample(14))
       end
     end
 

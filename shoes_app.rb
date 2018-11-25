@@ -27,13 +27,11 @@ class Game
 
   def arrangements
     @app.info @hand
-    Riichi::Tiles.arrangements(@hand)
+    Riichi::Tile.arrangements(@hand)
   end
 
   def leftovers(arrangement)
-    x = Riichi::Tiles.diff(@hand, arrangement)
-    @app.info "left #{x}"
-    x
+    Riichi::Tile.diff(@hand, arrangement)
   end
 end
 
