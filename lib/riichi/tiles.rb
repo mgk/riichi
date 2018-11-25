@@ -214,6 +214,23 @@ module Riichi
       return initial_arrangements + _arr(level + 1, acc, arrangement, remaining.drop(1))
     end
 
+    def self.pair?(tiles)
+      tiles.length == 2 && tiles[0] == tiles[1]
+    end
+
+    def complete?
+      if Tiles.pair?(tiles)
+        return true
+      end
+
+      if tiles.length % 3 != 2
+        return false
+      end
+
+      Tiles.arrangements(tiles).any? do |arrangement|
+        Tiles.pair?(Tiles.diff(tiles, arrangement))
+      end
+    end
   end
 
 end

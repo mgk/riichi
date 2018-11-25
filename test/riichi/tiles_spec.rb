@@ -156,6 +156,31 @@ describe Tiles do
     end
   end
 
+  describe "complete?" do
+    it "returns false for incomplete hands" do
+      [
+        "",
+        "1s",
+        "1s 1s 1s",
+        "1s 2s",
+        "1s 1s 1s Wd Gd"
+      ]
+      .each do |hand|
+        Tiles.from_s(hand).complete?.must_equal(false, "'#{hand}' is not complete")
+      end
+    end
+    it "returns true for complete hands" do
+      [
+        "1s 1s",
+        "1s 1s 1s Wd Wd",
+        "1s 2s 3s 4s 5s 6s 7s 7s 7s Ww Ww",
+      ]
+      .each do |hand|
+        Tiles.from_s(hand).complete?.must_equal(true, "'#{hand}' is complete")
+      end
+    end
+  end
+
   describe "initial_chow" do
     it "works" do
       tiles = Tiles.from_s("7s 8s 8s 8s 9s 1m").tiles
