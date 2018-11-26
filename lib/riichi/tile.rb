@@ -260,7 +260,7 @@ module Riichi
 
     def self._tile_types
       suited_tiles = [
-        [:pinzu, '⨷'], [:sozu, '‖'], [:manzu, '萬']
+        [:manzu, '萬'], [:sozu, '‖'], [:pinzu, '⨷']
       ].flat_map do |suit, pretty|
         (1..9).map do |rank|
           Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}", pretty: "#{rank}#{pretty}")
@@ -272,9 +272,9 @@ module Riichi
         Tile.new(wind:   :south, str: 'Sw', pretty: '南'),
         Tile.new(wind:   :west,  str: 'Ww', pretty: '西'),
         Tile.new(wind:   :north, str: 'Nw', pretty: '北'),
-        Tile.new(dragon: :red,   str: 'Rd', pretty: '中'),
         Tile.new(dragon: :white, str: 'Wd', pretty: '白'),
         Tile.new(dragon: :green, str: 'Gd', pretty: '發'),
+        Tile.new(dragon: :red,   str: 'Rd', pretty: '中'),
       ]
 
       (suited_tiles + honors).each_with_index.map do |t, i|

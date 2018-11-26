@@ -42,8 +42,8 @@ describe Tile do
 
   describe "Comparable" do
     it "should sort properly" do
-      unsorted = '1m 2p 3s 2s 3m 2m 1s 1m Wd Wd Gd Nw Ew Ww Sw'
-      sorted   = '2p 1s 2s 3s 1m 1m 2m 3m Ew Sw Ww Nw Wd Wd Gd'
+      unsorted = '1m 2p 3s 2s 2m 1s 1m Wd Wd Gd Nw Ew Ww Sw Rd'
+      sorted   = '1m 1m 2m 1s 2s 3s 2p Ew Sw Ww Nw Wd Wd Gd Rd'
 
       Tile.to_tiles(unsorted).sort.must_equal(Tile.to_tiles(sorted))
     end
@@ -114,8 +114,8 @@ describe Tile do
 
         ["1p 3p 9p 3s 7s 8s 8s 8s 9s 1m 2m 3m 6m Sw",
           [
-            ["7s 8s 9s", "1m 2m 3m"],
-            ["8s 8s 8s", "1m 2m 3m"],
+            ["1m 2m 3m", "7s 8s 9s"],
+            ["1m 2m 3m", "8s 8s 8s"],
           ]
         ],
 
