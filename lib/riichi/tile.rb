@@ -1,4 +1,5 @@
 module Riichi
+
   class Tile
     include Comparable
 
@@ -36,7 +37,17 @@ module Riichi
 
     # @return [true, false] if honor tile
     def honour?
-      wind || dragon
+      wind? || dragon?
+    end
+
+    # @return [true, false] if wind tile
+    def wind?
+      wind
+    end
+
+    # @return [true, false] if dragon tile
+    def dragon?
+      dragon
     end
 
     # @return [true, false] if suited tile
@@ -69,7 +80,7 @@ module Riichi
     #
     # @return [Tile] the following tile or `nil` if self is not suited or is a 9
     def next_in_suit
-      suited? && Tile.get_tile(suit: suit, rank: rank + 1)
+      suited? && Tile.get(suit: suit, rank: rank + 1)
     end
 
     def <=>(other)
@@ -95,9 +106,12 @@ module Riichi
       @tiles_by_str.fetch(tile)
     end
 
-    def self.get_tile(suit: nil, rank: nil, wind: nil, dragon: nil)
-      # TODO: winds and dragons
-      @suited_tiles[[suit, rank]]
+    def self.get(suit: nil, rank: nil, wind: nil, dragon: nil)
+      case
+      when suit then @tiles[[suit, rank]]
+      when wind then @tiles[wind]
+      when dragon then @tiles[dragon]
+      end
     end
 
     def self.to_tiles(str)
@@ -279,15 +293,21 @@ module Riichi
       @deck
     end
 
+    @tiles = _tile_types.map do |tile|
+      key = case
+      when tile.suited? then [tile.suit, tile.rank]
+      when tile.wind? then tile.wind
+      when tile.dragon? then tile.dragon
+      end
+
+      [key, tile]
+    end.to_h.freeze
+
     @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h.freeze
-    @suited_tiles = _tile_types.find_all(&:suited?).map do |tile|
-      [[tile.suit, tile.rank], tile]
-    end.to_h
+
     @deck = (_tile_types * 4).freeze
     freeze
-
   end
-
 end
 
 class Array

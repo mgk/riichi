@@ -5,27 +5,48 @@ module Riichi
     # @return [Array<Tiles>] unmelded tiles in the hand
     attr_reader :tiles
 
-    # @return [Array<Array<Tiles>>] open sets in the hand
-    attr_reader :open_melds
+    # @return [Array<Array<Tiles>>] open melds in the hand
+    attr_reader :melds
 
     # @return [Array<Tiles>] tiles discarded from the hand
     attr_reader :discards
 
-    def initialize(tiles, open_melds: [], discards: [])
+    # @return [:east, :south, :west, :north] the prevailing wind
+    attr_reader :bakaze
+
+    # @return [:east, :south, :west, :north] the seat wind
+    attr_reader :jikaze
+
+    def initialize(tiles, bakaze: :east, jikaze: :east, melds: [], discards: [])
       @tiles = case tiles
       when String then Tile.to_tiles(tiles)
       when Array then tiles
       end.sort
-      @open_melds = open_melds
+
+      if !valid?
+        raise ArgumentError, @tiles
+      end
+      @bakaze = bakaze
+      @jikaze = jikaze
+      @melds = melds
       @discards = discards
     end
 
+    def valid?
+      @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
+    end
+
     def open?
-      @open_melds.empty?
+      @melds.empty?
     end
 
     def closed?
       !open?
+    end
+
+    def value_tiles
+      [Tile.get(dragon: :red), Tile.get(dragon: :white), Tile.get(dragon: :green),
+        Tile.get(wind: bakaze), Tile.get(wind: jikaze)]
     end
 
     # Determines if the hand is complete
@@ -64,7 +85,7 @@ module Riichi
       # suited = @tiles.find_all(&:suited?).group_by(&:suit).map do |suit, tiles|
       #   "#{suit[0]}#{tiles.map(&:rank).join}"
       # end.join(" ")
-      "tiles: #{tiles}, open: #{open_melds}, discards: #{discards}"
+      "tiles: #{tiles}, open: #{melds}, discards: #{discards}"
     end
 
     def yaku
@@ -73,10 +94,11 @@ module Riichi
       end
       complete_arrangements.map do |arrangement|
         [
-          :tanyao
+          :tanyao,
+          :yakuhai,
         ]
-        .map do |y|
-          [arrangement, [y, self.method(y).call(arrangement)]]
+        .map do |hand_type|
+          [arrangement, [hand_type, self.method(hand_type).call(arrangement)]]
         end
         .find_all do |arr, y|
           y[1] > 0
@@ -85,12 +107,20 @@ module Riichi
     end
 
     def tanyao(arrangement)
-      all_simple = (open_melds + arrangement).all? do |set|
+      all_simple = (melds + arrangement).all? do |set|
         set.all? { |tile| tile.simple? }
       end
       all_simple ? 1 : 0
     end
 
+    def yakuhai(arrangement)
+      triples = (melds + arrangement).find_all { |s| s.length == 3 }
+      triples.sum do |triple|
+        value_tiles.count do |value_tile|
+          triple[0] == value_tile
+        end
+      end
+    end
   end
 
 end
