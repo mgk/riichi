@@ -29,6 +29,42 @@ describe Hand do
     end
   end
 
+  describe "waiting_tiles" do
+    it "reports tiles that complete the hand with given arrangement" do
+      [
+        ["1s 1s 1s Wd",          ["1s 1s 1s"], "Wd"],
+        ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
+        ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
+      ].map do |hand, arrangement, waiting_tiles|
+        [Hand.new(hand),
+          arrangement.map { |s| Tile.to_tiles(s) },
+          Tile.to_tiles(waiting_tiles)]
+      end.each do |hand, arrangement, waiting_tiles|
+        hand.waiting_tiles(arrangement).must_equal(waiting_tiles, hand)
+      end
+    end
+  end
+
+  describe "waits" do
+    it "reports winning tiles for tenpai hands" do
+      [
+        ["1s 1s 1s--2p 2p 2p--Wd Wd Wd--Ew Ew Ew-- Sw",
+          [
+            [["1s 1s 1s", "2p 2p 2p", "Wd Wd Wd", "Ew Ew Ew"], "Sw"]
+          ]
+        ],
+      ].map do |hand, waits|
+        hand = Hand.new(hand)
+        waits = waits.map do |arrangement, waiting_tiles|
+          [arrangement.map { |s| Tile.to_tiles(s) }.sort, Tile.to_tiles(waiting_tiles)]
+        end
+        [hand, waits]
+      end.each do |hand, waits|
+        hand.waits.must_equal(waits, hand)
+      end
+    end
+  end
+
   describe "tanyao" do
     simple_tiles = "2s 2s 2s  4s 5s 6s  7s 7s 7s  2p 2p 2p"
 

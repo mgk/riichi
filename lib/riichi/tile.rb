@@ -42,17 +42,17 @@ module Riichi
 
     # @return [true, false] if wind tile
     def wind?
-      wind
+      !wind.nil?
     end
 
     # @return [true, false] if dragon tile
     def dragon?
-      dragon
+      !dragon.nil?
     end
 
     # @return [true, false] if suited tile
     def suited?
-      suit
+      !suit.nil?
     end
 
     # @return [true, false] if suited end tile
@@ -62,7 +62,7 @@ module Riichi
 
     # @return [true, false] if suited middle tile
     def simple?
-      suit && !terminal?
+      suited? && !terminal?
     end
 
     # Determine if this tile connects to another tile. Two tiles
@@ -73,7 +73,9 @@ module Riichi
     def connects?(other)
       other &&
         (self == other ||
-          (suit && suit == other.suit && (rank - other.rank).abs <= 2))
+          (suited? &&
+            suit == other.suit &&
+            (rank - other.rank).abs <= 2))
     end
 
     # Get the tile following this tile in the same suit.
@@ -84,7 +86,7 @@ module Riichi
     end
 
     def <=>(other)
-      self.type <=> other&.type
+      other.is_a?(Tile) ? self.type <=> other&.type : -1
     end
 
     # Get the string representation of this tile.
@@ -115,7 +117,7 @@ module Riichi
     end
 
     def self.to_tiles(str)
-      str.split(' ').map { |s| to_tile(s) }
+      str.tr('-', ' ').split(' ').map { |s| to_tile(s) }
     end
 
     def self.set?(tiles)
@@ -138,6 +140,47 @@ module Riichi
 
     def self.chow_from(tile)
       [tile, tile.next_in_suit, tile.next_in_suit.next_in_suit]
+    end
+
+    def self.pairs(tiles)
+      pairs = tiles
+        .group_by { |t| t }
+        .find_all { |t, ts| ts.length == 2 }
+        .map { |_, pair| pair }
+      [pairs, Tile.diff(tiles, pairs)]
+    end
+
+    # Determine if self and the given tile form
+    # a tatsu (i.e., 2 of 3 tiles in a chow).
+    #
+    # @param [Tile] tile other tile
+    # @return [true, false] if the tiles form a tatsu
+    def tatsu?(tile)
+      self.connects?(tile) && self != tile
+    end
+
+    # Determine the tiles that would complete
+    # a chow with the given tiles.
+    #
+    # @param [Array<Tile>] tiles array of 2 tiles
+    # that may be a tatsu (2 of 3 tiles that make a chow)
+    # @return [Array<Tile>] array of tiles that would complete
+    # a chow with the given tiles, empty if tiles is not a tatsu.
+    # @see #tatsu?
+    def self.tiles_that_complete_chow(tiles)
+      if !tiles[0].tatsu?(tiles[1])
+        return []
+      end
+
+      tile1, tile2 = tiles.sort
+
+      if tile2.rank == tile1.rank + 2
+        [Tile.get(suit: tile1.suit, rank: tile1.rank + 1)]
+      elsif tile2.rank == tile1.rank + 1
+        [tile1.rank - 1, tile2.rank + 1]
+        .find_all { |rank| rank.between?(1, 9 )}
+        .map { |rank| Tile.get(suit: tile1.suit, rank: rank)}
+      end
     end
 
     def self.initial_sets(tiles)
@@ -215,6 +258,11 @@ module Riichi
       .map { |tile, idx| tile }
     end
 
+    # Determine all of the arrangements for an array of tiles.
+    # An arrangements is an array of complete sets. Each
+    # complete set is an array of tiles.
+    #
+    # @return [Array<Array<Array<Tile>>] the possible arrangements
     def self.arrangements(tiles)
       tiles = connectors(tiles.sort)
       arrangements = _arr(0, [], [], tiles)

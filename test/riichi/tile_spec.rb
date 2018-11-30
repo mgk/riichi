@@ -93,6 +93,65 @@ describe Tile do
     end
   end
 
+  describe "pairs" do
+    it "determines the pairs and leftovers" do
+      [
+        ["1m 2m",             [],                 "1m 2m"],
+        ["1m 1m",             ["1m 1m"],          ""],
+        ["1m 1m 2m",          ["1m 1m"],          "2m"],
+        ["1m 1m 2m 2m",       ["1m 1m", "2m 2m"], ""],
+        ["1m 1m 2s 3s",       ["1m 1m"],          "2s 3s"],
+
+      ].map do |tiles, pairs, leftovers|
+        pairs = pairs.map { |s| Tile.to_tiles(s) }
+        [Tile.to_tiles(tiles), pairs, Tile.to_tiles(leftovers)]
+      end
+      .each do |tiles, pairs, leftovers|
+        Tile.pairs(tiles).must_equal([pairs, leftovers], tiles)
+      end
+    end
+  end
+
+  describe "tatsu?" do
+    it "reports tiles form a tatsu" do
+      ["1m 2m", "2p 4p", "3s 4s", "7s 9s",].each do |tile_string|
+        tiles = Tile.to_tiles(tile_string)
+        tiles[0].tatsu?(tiles[1]).must_equal(true, tile_string)
+        tiles[1].tatsu?(tiles[0]).must_equal(true, tile_string)
+      end
+    end
+    it "reports tiles do NOT form a tatsu" do
+      ["1m 1m", "2p 5p", "5s 9s", "Rd Wd"].each do |tile_string|
+        tiles = Tile.to_tiles(tile_string)
+        tiles[0].tatsu?(tiles[1]).must_equal(false, tile_string)
+        tiles[1].tatsu?(tiles[0]).must_equal(false, tile_string)
+      end
+    end
+  end
+
+  describe "tiles_that_complete_chow?" do
+    it "reports tiles that complete the chow" do
+      [
+        ["1m 2m", "3m"],
+        ["2s 3s", "1s 4s"],
+        ["8p 9p", "7p"],
+        ["6p 8p", "7p"],
+        ["7p 8p", "6p 9p"],
+      ].each do |tiles, expected|
+        Tile.tiles_that_complete_chow(Tile.to_tiles(tiles))
+      end
+    end
+    it "reports that no tiles complete the chow" do
+      [
+        ["1m 1m", ""],
+        ["2s 5s", ""],
+        ["1p 9p", ""],
+      ].each do |tiles, expected|
+        Tile.tiles_that_complete_chow(Tile.to_tiles(tiles))
+      end
+    end
+  end
+
   describe "arrangements" do
     it "determines all chows and pungs in tiles" do
       test_cases = [
