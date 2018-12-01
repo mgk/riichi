@@ -109,4 +109,52 @@ describe Hand do
     end
   end
 
+  describe "pinfu" do
+    it "reports 0 for an open hand" do
+      hand = Hand.new('1s 2s 3s - 1p 2p 3p - 6m 7m 8m -- 7s 7s',
+                      melds: [Tile.to_tiles('1m 2m 3m')])
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.pinfu(arrangement).must_equal(0, hand)
+    end
+
+    it "reports 0 for a hand with pungs" do
+      chows = '2p 3p 4p - 2p 3p 4p - 2m 3m 4m'
+      atama = '6s 6s'
+
+      ['1s 1s 1s', 'Ew Ew Ew', 'Gd Gd Gd', '7m 7m 7m'].each do |pung|
+        hand = Hand.new([chows, pung, atama].join(' '))
+        arrangement = hand.complete_arrangements.first
+        arrangement.empty?.must_equal(false)
+        hand.pinfu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 for a middle wait" do
+      hand = Hand.new('--5p 7p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
+      hand.draw(Tile.to_tile('6p'))
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.pinfu(arrangement).must_equal(0, hand)
+    end
+
+    it "reports 0 for a one sided end waits" do
+      [['8p 9p', '7p'], ['1p 2p', '3p']].each do |tatsu, winning_tile|
+        hand = Hand.new("#{tatsu} 1s 2s 3s - 1m 2m 3m - 6m 7m 8m - 7s 7s")
+        hand.draw(Tile.to_tile(winning_tile))
+        arrangement = hand.complete_arrangements.first
+        arrangement.empty?.must_equal(false)
+        hand.pinfu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 1 for two sided wait, all chows, and valueless pair" do
+      hand = Hand.new('--5p 6p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
+      hand.draw(Tile.to_tile('4p'))
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.pinfu(arrangement).must_equal(1, hand)
+    end
+  end
+
 end

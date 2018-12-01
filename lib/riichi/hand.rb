@@ -21,7 +21,7 @@ module Riichi
     # @return [Array<Draw>] tiles drawn
     attr_reader :draws
 
-    def initialize(tiles, bakaze: :east, jikaze: :east, melds: [], discards: [])
+    def initialize(tiles, bakaze: :east, jikaze: :east, melds: [], discards: [], draws: [])
       @tiles = case tiles
       when String then Tile.to_tiles(tiles)
       when Array then tiles
@@ -34,6 +34,7 @@ module Riichi
       @jikaze = jikaze
       @melds = melds
       @discards = discards
+      @draws = draws
     end
 
     def draw(tile)
@@ -46,16 +47,20 @@ module Riichi
       @discards << tile
     end
 
+    def last_draw
+      @draws.last
+    end
+
     def valid?
       @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
     end
 
     def open?
-      @melds.empty?
+      !closed?
     end
 
     def closed?
-      !open?
+      @melds.empty?
     end
 
     def value_tiles
@@ -173,12 +178,16 @@ module Riichi
     def pinfu(arrangement)
       *sets, atama = arrangement
 
-      closed?
+      all_chows = sets.all? { |set| Tile.chow? set }
 
-      sets.all? { |set| Tile.chow? set }
+      two_sided_wait = sets.any? do |set|
+        (last_draw == set.first && last_draw.rank != 7) ||
+          (last_draw == set.last && last_draw.rank != 3)
+      end
 
-      !value_tiles.include?(atama[0])
+      valueless_atama = !value_tiles.include?(atama[0])
 
+      closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
     end
   end
 
