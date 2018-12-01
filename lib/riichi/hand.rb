@@ -189,6 +189,11 @@ module Riichi
 
       closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
     end
-  end
 
+    def toitoi(arrangement)
+      *sets, atama = arrangement
+      (sets + melds).all? { |set| Tile.pung?(set) } ? 2 : 0
+    end
+
+  end
 end

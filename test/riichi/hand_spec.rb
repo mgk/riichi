@@ -157,4 +157,30 @@ describe Hand do
     end
   end
 
+  describe "toitoi" do
+    it "reports 0 when not all pungs" do
+      hand = Hand.new('1s 2s 3s - 1m 1m 1m - 2m 2m 2m - 3m 3m 3m -7s 7s')
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.toitoi(arrangement).must_equal(0, hand)
+    end
+
+    it "reports 2 when all pungs for closed hand" do
+      hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2m 2m 2m - 3m 3m 3m -7s 7s')
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.toitoi(arrangement).must_equal(2, hand)
+    end
+
+    it "reports 2 when all pungs for open hand" do
+      hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2m 2m 2m - 7s 7s',
+        melds: [Tile.to_tiles('Ww Ww Ww')])
+      hand.open?.must_equal(true)
+      arrangement = hand.complete_arrangements.first
+      arrangement.empty?.must_equal(false)
+      hand.toitoi(arrangement).must_equal(2, hand)
+    end
+
+  end
+
 end
