@@ -195,5 +195,15 @@ module Riichi
       (sets + melds).all? { |set| Tile.pung?(set) } ? 2 : 0
     end
 
+    def mixed_triple_chow(arrangement)
+      *sets, atama = arrangement
+      chows = (sets + melds).find_all { |set| Tile.chow?(set) }
+      groups = chows.map(&:first).group_by(&:rank).values
+      if groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
+        return closed? ? 2 : 1
+      end
+      return 0
+    end
+
   end
 end
