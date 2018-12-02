@@ -199,11 +199,39 @@ describe Tile do
             ["3m 3m","1s 1s", "2p 2p", "Ww Ww", "Wd Wd", "Gd Gd", "Rd Rd"]
           ]
         ],
+
+        # chii toitsu - waiting on last pair
         ["1s 1s - 2p 2p - 3m 3m - Ww Ww - Gd Gd - Rd Rd - Wd",
           [
             ["3m 3m","1s 1s", "2p 2p", "Ww Ww", "Gd Gd", "Rd Rd"]
           ]
         ],
+
+        # chii toitsu - complete
+        ["1s 1s - 2p 2p - 3m 3m - Ww Ww - Gd Gd - Rd Rd - Wd Wd",
+          [
+            ["3m 3m","1s 1s", "2p 2p", "Ww Ww", "Wd Wd", "Gd Gd", "Rd Rd"]
+          ]
+        ],
+
+        # chii toitsu - cannot have a kong in chi toi
+        ["1s 1s - 2p 2p - 3m 3m - Ww Ww - Gd Gd - Rd Rd - Rd Rd ",
+          [["Rd Rd Rd"]]
+        ],
+
+        # 13 orphans - one of each - 13 sided wait!
+        [   "1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Gd Rd", [
+          %w(1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Gd Rd)
+        ]],
+
+        # 13 orphans - one pair, one sided wait
+        [   "1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Gd Gd", [
+          %w(1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd) + ["Gd Gd"]
+        ]],
+
+        # 13 orphans? - two pairs, nope
+        [   "1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Wd Gd Gd", []],
+
       ].map do |input, expected_arrangements|
         arrangements = expected_arrangements.map do |arrangement|
           arrangement.map { |array| Tile.to_tiles(array) }

@@ -273,17 +273,31 @@ module Riichi
     end
 
     # Determine all the special hand arrangements for tiles,
-    # including the tenpai arrangements. Hmm, not same for 13 orphans.
+    # including the tenpai arrangements.
     #
     # @param [Array<Tiles>] tiles tiles to check
     # @return [Array<Array<Array<Tile>>] the possible arrangements
     def self.special_hand_arrangements(tiles)
-      [self.chii_toi_arrangement(tiles)].compact
+      [self.chii_toi_arrangement(tiles),
+       self.kokushimuso_arrangement(tiles)].compact
     end
 
     def self.chii_toi_arrangement(tiles)
       pairs = self.pairs(tiles).first
       pairs.length >= 6 ? pairs : nil
+    end
+
+    def self.kokushimuso_arrangement(tiles)
+      if tiles.any?(&:simple?)
+        return nil
+      end
+
+      orphans = tiles.group_by { |tile| tile }.values
+
+      if (tiles.length == 14 && orphans.length == 13) ||
+        (tiles.length == 13 && orphans.length >= 12)
+        orphans
+      end
     end
 
     # An arrangement is non-maximal if it is a subset
