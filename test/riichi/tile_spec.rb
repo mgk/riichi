@@ -153,7 +153,7 @@ describe Tile do
   end
 
   describe "arrangements" do
-    it "determines all chows and pungs in tiles" do
+    it "determines all chows, pungs, and complete special hands in tiles" do
       test_cases = [
         ["",                      []  ],
         ["Ww Ww Nw Wd 1p 2p 4p",  []  ],
@@ -192,6 +192,18 @@ describe Tile do
           ]
         ],
 
+        ["1m 2p 3s 8p 8p 9m 9m Ew Sw Ww Nw Wd Gd Rd", []],
+
+        ["1s 1s - 2p 2p - 3m 3m - Ww Ww - Gd Gd - Rd Rd - Wd Wd",
+          [
+            ["3m 3m","1s 1s", "2p 2p", "Ww Ww", "Wd Wd", "Gd Gd", "Rd Rd"]
+          ]
+        ],
+        ["1s 1s - 2p 2p - 3m 3m - Ww Ww - Gd Gd - Rd Rd - Wd",
+          [
+            ["3m 3m","1s 1s", "2p 2p", "Ww Ww", "Gd Gd", "Rd Rd"]
+          ]
+        ],
       ].map do |input, expected_arrangements|
         arrangements = expected_arrangements.map do |arrangement|
           arrangement.map { |array| Tile.to_tiles(array) }
@@ -218,8 +230,14 @@ describe Tile do
 
         Tile.arrangements(hand).each do |arrangement|
           # all sets in the arrangement must really be sets
-          arrangement.each do |set|
-            Tile.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+          if arrangement.length.between?(6, 7)
+            arrangement.each do |pair|
+              Tile.pair?(pair).must_equal(true, "n=[#{n}] bad pair #{pair} for #{hand}")
+            end
+          else
+            arrangement.each do |set|
+              Tile.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+            end
           end
 
           # all arrangement tiles exist in the hand

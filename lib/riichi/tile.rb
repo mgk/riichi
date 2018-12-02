@@ -259,14 +259,31 @@ module Riichi
     end
 
     # Determine all of the arrangements for an array of tiles.
-    # An arrangements is an array of complete sets. Each
+    # An arrangement is an array of complete sets. Each
     # complete set is an array of tiles.
     #
+    # @param [Array<Tiles>] tiles tiles to check
     # @return [Array<Array<Array<Tile>>] the possible arrangements
     def self.arrangements(tiles)
-      tiles = connectors(tiles.sort)
-      arrangements = _arr(0, [], [], tiles)
+      tiles = tiles.sort
+      specials = special_hand_arrangements(tiles)
+      tiles = connectors(tiles)
+      arrangements = _arr(0, [], [], tiles) + specials
       _remove_non_maximal_arrangements(arrangements)
+    end
+
+    # Determine all the special hand arrangements for tiles,
+    # including the tenpai arrangements. Hmm, not same for 13 orphans.
+    #
+    # @param [Array<Tiles>] tiles tiles to check
+    # @return [Array<Array<Array<Tile>>] the possible arrangements
+    def self.special_hand_arrangements(tiles)
+      [self.chii_toi_arrangement(tiles)].compact
+    end
+
+    def self.chii_toi_arrangement(tiles)
+      pairs = self.pairs(tiles).first
+      pairs.length >= 6 ? pairs : nil
     end
 
     # An arrangement is non-maximal if it is a subset

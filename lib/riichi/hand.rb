@@ -94,7 +94,9 @@ module Riichi
         unmatched = Tile.diff(tiles, arrangement)
         [arrangement, unmatched]
       end
-      .find_all { |arrangement, unmatched| Tile.pair?(unmatched) }
+      .find_all do |arrangement, unmatched|
+        unmatched.empty? || Tile.pair?(unmatched)
+      end
       .map do |arrangement, pair|
         arrangement + [pair]
       end
@@ -205,5 +207,9 @@ module Riichi
       return 0
     end
 
+    def chii_toitsu(arrangement)
+      *pairs, _atama = arrangement
+      pairs.length == 7 ? 2 : 0
+    end
   end
 end
