@@ -192,13 +192,24 @@ module Riichi
       closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
     end
 
+    def honitsu(arrangement)
+      suits = (arrangement + melds)
+      .group_by { |set| set.first.suit }
+
+      if suits.length == 2 && suits.include?(nil)
+        closed? ? 3 : 2
+      else
+        0
+      end
+    end
+
     def toitoi(arrangement)
-      *sets, atama = arrangement
+      *sets, _atama = arrangement
       (sets + melds).all? { |set| Tile.pung?(set) } ? 2 : 0
     end
 
     def mixed_triple_chow(arrangement)
-      *sets, atama = arrangement
+      *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
       groups = chows.map(&:first).group_by(&:rank).values
       if groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
@@ -211,5 +222,6 @@ module Riichi
       *pairs, _atama = arrangement
       pairs.length == 7 ? 2 : 0
     end
+
   end
 end

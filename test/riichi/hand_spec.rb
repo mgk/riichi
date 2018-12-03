@@ -184,6 +184,67 @@ describe Hand do
     end
   end
 
+  describe "honitsu" do
+    it "reports 0 when closed with more than one suit" do
+      hand = Hand.new("1p 1p 1p - 1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7m 7m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when open with more than one suit" do
+      hand = Hand.new("1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7m 7m",
+        melds: [Tile.to_tiles("1m 1m 1m")])
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 for a full flush (chinitsu)" do
+      hand = Hand.new("1m 2m 3m 4m 5m 6m 7m 8m 9m 9m 9m 9m 1m 1m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when there are no suits (tsuiiso!)" do
+      hand = Hand.new("Ew Ew Ew - Sw Sw Sw - Ww Ww Ww - Rd Rd Rd - Gd Gd")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 3 when closed with one suit and honors" do
+      hand = Hand.new("1p 1p 1p - 1p 2p 3p - Gd Gd Gd - 9p 9p 9p - Nw Nw")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(3, hand)
+      end
+    end
+
+    it "reports 3 when closed, one suit, all chows, and honors" do
+      hand = Hand.new("1p 2p 3p - 1p 2p 3p - 1p 2p 3p - 1p 2p 3p - Nw Nw")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(3, hand)
+      end
+    end
+
+    it "reports 2 when open with more than one suit" do
+      hand = Hand.new("1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7p 7p",
+        melds: [Tile.to_tiles("1p 1p 1p")])
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.honitsu(arrangement).must_equal(2, hand)
+      end
+    end
+
+  end
+
   describe "toitoi" do
     it "reports 0 when not all pungs" do
       hand = Hand.new('1s 2s 3s - 1m 1m 1m - 2p 2p 2p - 3m 3m 3m -7s 7s')
