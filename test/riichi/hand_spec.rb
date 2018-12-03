@@ -7,15 +7,15 @@ describe Hand do
   describe "complete?" do
     it "returns false for incomplete hands" do
       [
-        "",
-        "1s",
-        "1s 1s 1s",
-        "1s 2s",
-        "1s 1s 1s Wd Gd",
-        "4p 4p - 1p 1p - 2p 2p - Ew Ew - Sw Sw - Ww Ww",
+        ["1s", ["1p 1p 1p", "2p 2p 2p", "3p 3p 3p", "4p 4p 4p"]],
+        ["1s 1s 1s 1s", ["1p 1p 1p", "2p 2p 2p", "3p 3p 3p"]],
+        ["1s 2s", ["1p 1p 1p", "2p 2p 2p", "3p 3p 3p", "Gd Gd Gd"]],
+        ["1s 1s 1s Wd", ["1p 1p 1p", "2p 2p 2p", "3p 3p 3p"]],
+        ["4p 4p - 1p 1p - 2p 2p - Ew Ew - Sw Sw - Ww Ww - Gd", [""]],
       ]
-      .each do |tiles|
-        Hand.new(tiles).complete?.must_equal(false, "'#{tiles}' is not complete")
+      .each do |tiles, melds|
+        Hand.new(tiles, melds: melds.map { |m| Tile.to_tiles(m) })
+          .complete?.must_equal(false, "'#{tiles}' is not complete")
       end
     end
     it "returns true for complete hands" do
@@ -26,7 +26,13 @@ describe Hand do
         "4p 4p - 1p 1p - 2p 2p - Ew Ew - Sw Sw - Ww Ww - Nw Nw",
       ]
       .each do |tiles|
-        Hand.new(tiles).complete?.must_equal(true, "'#{tiles}' is complete")
+        tiles = Tile.to_tiles(tiles)
+        num_melds = (14 - tiles.length) / 3
+        melds = (1..num_melds).map do |num|
+          [Tile.get(suit: :pinzu, rank: num)] * 3
+        end
+        Hand.new(tiles, melds: melds)
+          .complete?.must_equal(true, "'#{tiles}' is complete")
       end
     end
   end
@@ -37,8 +43,13 @@ describe Hand do
         ["1s 1s 1s Wd",          ["1s 1s 1s"], "Wd"],
         ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
         ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
-      ].map do |hand, arrangement, waiting_tiles|
-        [Hand.new(hand),
+      ].map do |tiles, arrangement, waiting_tiles|
+        tiles = Tile.to_tiles(tiles)
+        num_melds = (13 - tiles.length) / 3
+        melds = (1..num_melds).map do |num|
+          [Tile.get(suit: :pinzu, rank: num)] * 3
+        end
+        [Hand.new(tiles, melds: melds),
           arrangement.map { |s| Tile.to_tiles(s) },
           Tile.to_tiles(waiting_tiles)]
       end.each do |hand, arrangement, waiting_tiles|
@@ -319,6 +330,41 @@ describe Hand do
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
         hand.chii_toitsu(arrangement).must_equal(2, hand)
+      end
+    end
+  end
+
+  describe "ittsu" do
+    it "reports 0 when straight in suit is not complete" do
+      hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 7m 7m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.itsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when not all chows are present" do
+      hand = Hand.new("1p 2p 3p - 3p 4p 5p - 6p 7p 8p - 7p 8p 9p - 7m 7m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.itsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 2 when closed" do
+      hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - Gd Gd Gd - 7m 7m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.itsu(arrangement).must_equal(2, hand)
+      end
+    end
+
+    it "reports 1 when open" do
+      hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - 7m 7m",
+        melds: [Tile.to_tiles("Gd Gd Gd")])
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.itsu(arrangement).must_equal(1, hand)
       end
     end
   end

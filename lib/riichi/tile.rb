@@ -131,7 +131,7 @@ module Riichi
     end
 
     def self.chow?(tiles)
-      tiles.size == 3 &&
+      tiles.length == 3 &&
       tiles.all? { |tile| tile.suited? } &&
       tiles.all? { |tile| tile.suit == tiles[0].suit } &&
       tiles[1].rank == tiles[0].rank + 1 &&

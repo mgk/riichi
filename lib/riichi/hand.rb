@@ -27,14 +27,15 @@ module Riichi
       when Array then tiles
       end.sort
 
-      if !valid?
-        raise ArgumentError, @tiles
-      end
+      @melds = melds
       @bakaze = bakaze
       @jikaze = jikaze
-      @melds = melds
       @discards = discards
       @draws = draws
+
+      if !valid?
+        raise ArgumentError, self
+      end
     end
 
     def draw(tile)
@@ -52,7 +53,8 @@ module Riichi
     end
 
     def valid?
-      @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
+      (@tiles + @melds.flatten).length.between?(13, 14) &&
+        @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
     end
 
     def open?
@@ -193,8 +195,7 @@ module Riichi
     end
 
     def honitsu(arrangement)
-      suits = (arrangement + melds)
-      .group_by { |set| set.first.suit }
+      suits = (arrangement + melds).group_by { |set| set.first.suit }
 
       if suits.length == 2 && suits.include?(nil)
         closed? ? 3 : 2
@@ -221,6 +222,21 @@ module Riichi
     def chii_toitsu(arrangement)
       *pairs, _atama = arrangement
       pairs.length == 7 ? 2 : 0
+    end
+
+    def itsu(arrangement)
+      *sets, _atam = arrangement
+      chows = (sets + melds).find_all { |set| Tile.chow?(set) }
+      suits = chows.group_by { |chow| chow.first.suit }.values
+      has_itsu = suits.any? do |suit_chows|
+        starting_tiles = Set.new(suit_chows.map(&:first).map(&:rank))
+        starting_tiles.superset?(Set[1, 4, 7])
+      end
+      if has_itsu
+        closed? ? 2 : 1
+      else
+        0
+      end
     end
 
   end
