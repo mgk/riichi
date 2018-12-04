@@ -194,7 +194,7 @@ module Riichi
       closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
     end
 
-    def score(condition, closed_score, open_score: closed_score - 1)
+    private def score(condition, closed_score, open_score: closed_score - 1)
       if condition
         closed? ? closed_score : open_score
       else
@@ -204,12 +204,7 @@ module Riichi
 
     def honitsu(arrangement)
       suits = (arrangement + melds).group_by { |set| set.first.suit }
-
-      if suits.length == 2 && suits.include?(nil)
-        closed? ? 3 : 2
-      else
-        0
-      end
+      score(suits.length == 2 && suits.include?(nil), 3)
     end
 
     def toitoi(arrangement)
@@ -217,19 +212,18 @@ module Riichi
       (sets + melds).all? { |set| Tile.pung?(set) } ? 2 : 0
     end
 
+    def chii_toitsu(arrangement)
+      *pairs, _atama = arrangement
+      pairs.length == 7 ? 2 : 0
+    end
+
     def mixed_triple_chow(arrangement)
       *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
       groups = chows.map(&:first).group_by(&:rank).values
-      if groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
-        return closed? ? 2 : 1
-      end
-      return 0
-    end
 
-    def chii_toitsu(arrangement)
-      *pairs, _atama = arrangement
-      pairs.length == 7 ? 2 : 0
+      has_san_ski = groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
+      score(has_san_ski, 2)
     end
 
     def itsu(arrangement)
@@ -240,11 +234,8 @@ module Riichi
         starting_tiles = Set.new(suit_chows.map(&:first).map(&:rank))
         starting_tiles.superset?(Set[1, 4, 7])
       end
-      if has_itsu
-        closed? ? 2 : 1
-      else
-        0
-      end
+
+      score(has_itsu, 2)
     end
 
     def chanta(arrangement)
@@ -255,11 +246,10 @@ module Riichi
       has_suit = (arrangement + melds).flatten.any?(&:suited?)
       has_honour = (arrangement + melds).flatten.any?(&:honour?)
 
-      if all_sets_have_outside_tile && has_chow && has_suit && has_honour
-        closed? ? 2 : 1
-      else
-        0
-      end
+      score(all_sets_have_outside_tile &&
+            has_chow &&
+            has_suit &&
+            has_honour, 2)
     end
 
     def chinitsu(arrangement)
