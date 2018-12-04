@@ -369,4 +369,55 @@ describe Hand do
     end
   end
 
+  describe "chanta" do
+    it "reports 0 when not all sets include outside tile" do
+      hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 9m 9m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when atama is not outside tiles" do
+      hand = Hand.new("1p 2p 3p - 3p 4p 5p - 6p 7p 8p - 7p 8p 9p - 7m 7m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when all no honours tiles (junchan)" do
+      hand = Hand.new("1p 2p 3p - 9p 9p 9p - 1s 2s 3s - 1s 1s 1s - 9m 9m")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 0 when all outside tiles (honroto)!" do
+      hand = Hand.new("1p 1p 1p - 9p 9p 9p - Nw Nw Nw - 1s 1s 1s - Rd Rd")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(0, hand)
+      end
+    end
+
+    it "reports 2 when closed" do
+      hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - Gd Gd Gd - Nw Nw")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(2, hand)
+      end
+    end
+
+    it "reports 1 when open" do
+      hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - 1m 1m",
+        melds: [Tile.to_tiles("Gd Gd Gd")])
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chanta(arrangement).must_equal(1, hand)
+      end
+    end
+  end
+
 end

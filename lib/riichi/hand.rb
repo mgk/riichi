@@ -225,7 +225,7 @@ module Riichi
     end
 
     def itsu(arrangement)
-      *sets, _atam = arrangement
+      *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
       suits = chows.group_by { |chow| chow.first.suit }.values
       has_itsu = suits.any? do |suit_chows|
@@ -239,5 +239,19 @@ module Riichi
       end
     end
 
+    def chanta(arrangement)
+      all_sets_have_outside_tile = (arrangement + melds).all? do |set|
+        set.any? { |tile| tile.terminal? || tile.honour? }
+      end
+      has_chow = (arrangement + melds).any? { |set| Tile.chow?(set) }
+      has_suit = (arrangement + melds).flatten.any?(&:suited?)
+      has_honour = (arrangement + melds).flatten.any?(&:honour?)
+
+      if all_sets_have_outside_tile && has_chow && has_suit && has_honour
+        closed? ? 2 : 1
+      else
+        0
+      end
+    end
   end
 end
