@@ -255,5 +255,9 @@ module Riichi
       tiles.first.suited? &&
         tiles.all? { |tile| tile.suit == tiles.first.suit }
     end
+
+    def san_anko?(arrangement)
+      arrangement.count { |set| Tile.pung?(set) } >= 3
+    end
   end
 end
