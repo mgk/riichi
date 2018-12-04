@@ -99,35 +99,35 @@ describe Hand do
     end
   end
 
-  describe "tanyao" do
+  describe "tanyao?" do
     simple_tiles = "2s 2s 2s  4s 5s 6s  7s 7s 7s  2p 2p 2p"
 
-    it "reports 1 when present" do
+    it "reports true when present" do
       ["3p 3p", "2m 2m"].each do |atama|
         hand = Hand.new(simple_tiles + " " + atama)
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.tanyao(arrangement).must_equal(1, "#{hand} is tanyao")
+        hand.tanyao?(arrangement).must_equal(true, hand)
 
         # Same hand with 4 open melds
         melds = arrangement.take(4)
         open_hand = Hand.new(atama, melds: melds)
-        open_hand.tanyao(arrangement.drop(4)).must_equal(1, "#{open_hand} is tanyao")
+        open_hand.tanyao?(arrangement.drop(4)).must_equal(true, hand)
       end
     end
 
-    it "reports 0 when not present" do
+    it "reports false when not present" do
       ["Ww Ww", "1s 1s"].each do |atama|
         hand = Hand.new(simple_tiles + " " + atama)
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.tanyao(arrangement).must_equal(0, "#{hand} is not tanyao")
+        hand.tanyao?(arrangement).must_equal(false, hand)
       end
     end
 
   end
 
-  describe "yakuhai" do
+  describe "yakuhai_count" do
     other_tiles = "2s 2s 2s  4s 5s 6s  9s 9s"
 
     it "reports 1 for each value tile pung" do
@@ -141,22 +141,22 @@ describe Hand do
         hand = Hand.new(other_tiles + " " + tiles, bakaze: bakaze, jikaze: jikaze)
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.yakuhai(arrangement).must_equal(score, "#{hand} should score #{score}")
+        hand.yakuhai_count(arrangement).must_equal(score, "#{hand} should score #{score}")
       end
     end
   end
 
-  describe "pinfu" do
-    it "reports 0 for an open hand" do
+  describe "pinfu?" do
+    it "reports false for an open hand" do
       hand = Hand.new('1s 2s 3s - 1p 2p 3p - 6m 7m 8m -- 7s 7s',
                       melds: [Tile.to_tiles('1m 2m 3m')])
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
       arrangement.empty?.must_equal(false)
-      hand.pinfu(arrangement).must_equal(0, hand)
+      hand.pinfu?(arrangement).must_equal(false, hand)
     end
 
-    it "reports 0 for a hand with pungs" do
+    it "reports false for a hand with pungs" do
       chows = '2p 3p 4p - 2p 3p 4p - 2m 3m 4m'
       atama = '6s 6s'
 
@@ -164,145 +164,145 @@ describe Hand do
         hand = Hand.new([chows, pung, atama].join(' '))
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.pinfu(arrangement).must_equal(0, hand)
+        hand.pinfu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 for a middle wait" do
+    it "reports false for a middle wait" do
       hand = Hand.new('--5p 7p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
       hand.draw(Tile.to_tile('6p'))
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
-      hand.pinfu(arrangement).must_equal(0, hand)
+      hand.pinfu?(arrangement).must_equal(false, hand)
     end
 
-    it "reports 0 for a one sided end waits" do
+    it "reports false for a one sided end waits" do
       [['8p 9p', '7p'], ['1p 2p', '3p']].each do |tatsu, winning_tile|
         hand = Hand.new("#{tatsu} 1s 2s 3s - 1m 2m 3m - 6m 7m 8m - 7s 7s")
         hand.draw(Tile.to_tile(winning_tile))
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.pinfu(arrangement).must_equal(0, hand)
+        hand.pinfu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 1 for pinfu" do
+    it "reports true for pinfu" do
       hand = Hand.new('--5p 6p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
       hand.draw(Tile.to_tile('4p'))
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
-      hand.pinfu(arrangement).must_equal(1, hand)
+      hand.pinfu?(arrangement).must_equal(true, hand)
     end
   end
 
-  describe "honitsu" do
-    it "reports 0 when closed with more than one suit" do
+  describe "honitsu?" do
+    it "reports false when closed with more than one suit" do
       hand = Hand.new("1p 1p 1p - 1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7m 7m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(0, hand)
+        hand.honitsu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 when open with more than one suit" do
+    it "reports false when open with more than one suit" do
       hand = Hand.new("1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7m 7m",
         melds: [Tile.to_tiles("1m 1m 1m")])
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(0, hand)
+        hand.honitsu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 for a full flush (chinitsu)" do
+    it "reports false for a full flush (chinitsu?)" do
       hand = Hand.new("1m 2m 3m 4m 5m 6m 7m 8m 9m 9m 9m 9m 1m 1m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(0, hand)
+        hand.honitsu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 when there are no suits (tsuiiso!)" do
+    it "reports false when there are no suits (tsuiiso!)" do
       hand = Hand.new("Ew Ew Ew - Sw Sw Sw - Ww Ww Ww - Rd Rd Rd - Gd Gd")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(0, hand)
+        hand.honitsu?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 3 when closed with one suit and honors" do
+    it "reports true when closed with one suit and honors" do
       hand = Hand.new("1p 1p 1p - 1p 2p 3p - Gd Gd Gd - 9p 9p 9p - Nw Nw")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(3, hand)
+        hand.honitsu?(arrangement).must_equal(true, hand)
       end
     end
 
-    it "reports 3 when closed, one suit, all chows, and honors" do
+    it "reports true when closed, one suit, all chows, and honors" do
       hand = Hand.new("1p 2p 3p - 1p 2p 3p - 1p 2p 3p - 1p 2p 3p - Nw Nw")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(3, hand)
+        hand.honitsu?(arrangement).must_equal(true, hand)
       end
     end
 
-    it "reports 2 when open with more than one suit" do
+    it "reports true when open" do
       hand = Hand.new("1p 2p 3p - Gd Gd Gd - 9p 9p 9p - 7p 7p",
         melds: [Tile.to_tiles("1p 1p 1p")])
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.honitsu(arrangement).must_equal(2, hand)
+        hand.honitsu?(arrangement).must_equal(true, hand)
       end
     end
 
   end
 
-  describe "toitoi" do
-    it "reports 0 when not all pungs" do
+  describe "toitoi?" do
+    it "reports false when not all pungs" do
       hand = Hand.new('1s 2s 3s - 1m 1m 1m - 2p 2p 2p - 3m 3m 3m -7s 7s')
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
-      hand.toitoi(arrangement).must_equal(0, hand)
+      hand.toitoi?(arrangement).must_equal(false, hand)
     end
 
-    it "reports 2 when all pungs for closed hand" do
+    it "reports true when all pungs closed hand" do
       hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2p 2p 2p - 3m 3m 3m -7s 7s')
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
-      hand.toitoi(arrangement).must_equal(2, hand)
+      hand.toitoi?(arrangement).must_equal(true, hand)
     end
 
-    it "reports 2 when all pungs for open hand" do
+    it "reports true when all pungs for open hand" do
       hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2m 2m 2m - 7s 7s',
         melds: [Tile.to_tiles('Ww Ww Ww')])
       hand.open?.must_equal(true)
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
-      hand.toitoi(arrangement).must_equal(2, hand)
+      hand.toitoi?(arrangement).must_equal(true, hand)
     end
   end
 
-  describe "san shoku dojun - three color same sequence" do
-    it "reports 0 when not present" do
+  describe "mixed_triple_chow? (san shoku dojun)" do
+    it "reports false when not present" do
       ['1s 2s 3s - 1m 2m 3m - 2p 3p 4p - 3m 3m 3m -7s 7s',
         '1s 2s 3s - 1m 2m 3m - 1m 2m 3m - 5m 5m 5m -7s 7s'].each do |hand|
         hand = Hand.new(hand)
         arrangement = hand.complete_arrangements.first
         arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow(arrangement).must_equal(0, hand)
+        hand.mixed_triple_chow?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 2 for closed hands" do
+    it "reports true when present for closed hands" do
       ['1s 2s 3s - 1m 2m 3m - 1p 2p 3p - 3m 3m 3m -7s 7s',
         '4s 5s 6s - 4m 5m 6m - 4p 5p 6p - Rd Rd Rd - Ew Ew'].each do |hand|
         hand = Hand.new(hand)
         arrangement = hand.complete_arrangements.first
         arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow(arrangement).must_equal(2, hand)
+        hand.mixed_triple_chow?(arrangement).must_equal(true, hand)
       end
     end
 
-    it "reports 1 for open hands" do
+    it "reports true when present for open hands" do
       [
         ['1s 2s 3s - 1m 2m 3m - 1p 2p 3p', '7s 7s 7s'],
         ['4s 5s 6s - 4m 5m 6m - Rd Rd Rd', '4p 5p 6p'],
@@ -310,36 +310,36 @@ describe Hand do
         hand = Hand.new(tiles + ' Sw Sw', melds: [Tile.to_tiles(meld)])
         arrangement = hand.complete_arrangements.first
         arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow(arrangement).must_equal(1, hand)
+        hand.mixed_triple_chow?(arrangement).must_equal(true, hand)
       end
     end
   end
 
-  describe "chii toitsu" do
-    it "reports 0 when not present" do
+  describe "chii_toitsu?" do
+    it "reports false when not present" do
       ['1s 2s 3s - 1m 2m 3m - 2p 3p 4p - 3m 3m 3m - 7s 7s'].each do |hand|
         hand = Hand.new(hand)
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.chii_toitsu(arrangement).must_equal(0, hand)
+        hand.chii_toitsu?(arrangement).must_equal(false, hand)
       end
     end
-    it "reports 2 when present" do
+    it "reports true when present" do
       ['1m 1m - 3m 3m - 1s 1s - 3s 3s - 1p 1p - 2p 2p - 8p 8p'].each do |hand|
         hand = Hand.new(hand)
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
-        hand.chii_toitsu(arrangement).must_equal(2, hand)
+        hand.chii_toitsu?(arrangement).must_equal(true, hand)
       end
     end
   end
 
-  describe "ittsu" do
+  describe "ittsu?" do
     it "reports 0 when straight in suit is not complete" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 7m 7m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.itsu(arrangement).must_equal(0, hand)
+        hand.ittsu?(arrangement).must_equal(false, hand)
       end
     end
 
@@ -347,7 +347,7 @@ describe Hand do
       hand = Hand.new("1p 2p 3p - 3p 4p 5p - 6p 7p 8p - 7p 8p 9p - 7m 7m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.itsu(arrangement).must_equal(0, hand)
+        hand.ittsu?(arrangement).must_equal(false, hand)
       end
     end
 
@@ -355,7 +355,7 @@ describe Hand do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - Gd Gd Gd - 7m 7m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.itsu(arrangement).must_equal(2, hand)
+        hand.ittsu?(arrangement).must_equal(true, hand)
       end
     end
 
@@ -364,86 +364,86 @@ describe Hand do
         melds: [Tile.to_tiles("Gd Gd Gd")])
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.itsu(arrangement).must_equal(1, hand)
+        hand.ittsu?(arrangement).must_equal(true, hand)
       end
     end
   end
 
-  describe "chanta" do
-    it "reports 0 when not all sets include outside tile" do
+  describe "chanta?" do
+    it "reports false when not all sets include outside tile" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 9m 9m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(0, hand)
+        hand.chanta?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 when atama is not outside tiles" do
+    it "reports false when atama is not outside tiles" do
       hand = Hand.new("1p 2p 3p - 3p 4p 5p - 6p 7p 8p - 7p 8p 9p - 7m 7m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(0, hand)
+        hand.chanta?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 when all no honours tiles (junchan)" do
+    it "reports false when all no honours tiles (junchan)" do
       hand = Hand.new("1p 2p 3p - 9p 9p 9p - 1s 2s 3s - 1s 1s 1s - 9m 9m")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(0, hand)
+        hand.chanta?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 0 when all outside tiles (honroto)!" do
+    it "reports falsewhen all outside tiles (honroto)!" do
       hand = Hand.new("1p 1p 1p - 9p 9p 9p - Nw Nw Nw - 1s 1s 1s - Rd Rd")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(0, hand)
+        hand.chanta?(arrangement).must_equal(false, hand)
       end
     end
 
-    it "reports 2 when closed" do
+    it "reports true when present in closed hand" do
       hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - Gd Gd Gd - Nw Nw")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(2, hand)
+        hand.chanta?(arrangement).must_equal(true, hand)
       end
     end
 
-    it "reports 1 when open" do
+    it "reports true when present in open hand" do
       hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - 1m 1m",
         melds: [Tile.to_tiles("Gd Gd Gd")])
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chanta(arrangement).must_equal(1, hand)
+        hand.chanta?(arrangement).must_equal(true, hand)
       end
     end
   end
 
-  describe "chinitsu" do
-    it "reports 0 when not pure flush" do
+  describe "chinitsu?" do
+    it "reports false when not pure flush" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - 1p 1p 1p - Rd Rd")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chinitsu(arrangement).must_equal(0, hand)
+        hand.chinitsu?(arrangement).must_equal(false, hand)
       end
     end
 
-    # TODO 9 gates
-    it "reports 6 when closed" do
+    # TODO distinguish 9 gates
+    it "reports  true when closed" do
       hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - 4p 4p 4p - 2p 2p")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chinitsu(arrangement).must_equal(6, hand)
+        hand.chinitsu?(arrangement).must_equal(true, hand)
       end
     end
 
-    it "reports 5 when open" do
+    it "reports true when open" do
       hand = Hand.new("1p 2p 3p 7p 8p 9p - 4p 4p 4p - 2p 2p",
         melds: [Tile.to_tiles("1p 2p 3p")])
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
-        hand.chinitsu(arrangement).must_equal(5, hand)
+        hand.chinitsu?(arrangement).must_equal(true, hand)
       end
     end
   end

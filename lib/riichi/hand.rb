@@ -128,8 +128,6 @@ module Riichi
 
     # Determine all the tenpai arrangments and the tiles that complete each.
     #
-    # TODO: terminology?
-    #
     # @return [Array<Array<Array<Array<Tile>>>, Array<Tile>] an array
     # of [arrangement, waiting_tiles] pairs, one for each arrangement that
     # makes the hand tenpai.
@@ -167,19 +165,21 @@ module Riichi
       end
     end
 
-    def tanyao(arrangement)
-      (melds + arrangement).flatten.all?(&:simple?) ? 1 : 0
+    def tanyao?(arrangement)
+      (melds + arrangement).flatten.all?(&:simple?)
     end
 
-    def yakuhai(arrangement)
-      (melds + arrangement).find_all { |set| Tile.pung? set }.sum do |pung|
-        value_tiles.count do |value_tile|
-          pung[0] == value_tile
-        end
+    def has_pung_of?(arrangement, tile)
+      (melds + arrangement).any? do |set|
+        Tile.pung?(set) && set.first == tile
       end
     end
 
-    def pinfu(arrangement)
+    def yakuhai_count(arrangement)
+      value_tiles.count { |tile| has_pung_of?(arrangement, tile) }
+    end
+
+    def pinfu?(arrangement)
       *sets, atama = arrangement
 
       all_chows = sets.all? { |set| Tile.chow? set }
@@ -191,7 +191,7 @@ module Riichi
 
       valueless_atama = !value_tiles.include?(atama[0])
 
-      closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
+      closed? && all_chows && two_sided_wait && valueless_atama
     end
 
     private def score(condition, closed_score, open_score: closed_score - 1)
@@ -202,43 +202,41 @@ module Riichi
       end
     end
 
-    def honitsu(arrangement)
+    def honitsu?(arrangement)
       suits = (arrangement + melds).group_by { |set| set.first.suit }
-      score(suits.length == 2 && suits.include?(nil), 3)
+      suits.length == 2 && suits.include?(nil)
     end
 
-    def toitoi(arrangement)
+    def toitoi?(arrangement)
       *sets, _atama = arrangement
-      (sets + melds).all? { |set| Tile.pung?(set) } ? 2 : 0
+      (sets + melds).all? { |set| Tile.pung?(set) }
     end
 
-    def chii_toitsu(arrangement)
+    def chii_toitsu?(arrangement)
       *pairs, _atama = arrangement
-      pairs.length == 7 ? 2 : 0
+      pairs.length == 7
     end
 
-    def mixed_triple_chow(arrangement)
+    def mixed_triple_chow?(arrangement)
       *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
       groups = chows.map(&:first).group_by(&:rank).values
 
-      has_san_ski = groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
-      score(has_san_ski, 2)
+      groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
     end
 
-    def itsu(arrangement)
+    def ittsu?(arrangement)
       *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
       suits = chows.group_by { |chow| chow.first.suit }.values
-      has_itsu = suits.any? do |suit_chows|
+
+      suits.any? do |suit_chows|
         starting_tiles = Set.new(suit_chows.map(&:first).map(&:rank))
         starting_tiles.superset?(Set[1, 4, 7])
       end
-
-      score(has_itsu, 2)
     end
 
-    def chanta(arrangement)
+    def chanta?(arrangement)
       all_sets_have_outside_tile = (arrangement + melds).all? do |set|
         set.any? { |tile| tile.terminal? || tile.honour? }
       end
@@ -246,18 +244,16 @@ module Riichi
       has_suit = (arrangement + melds).flatten.any?(&:suited?)
       has_honour = (arrangement + melds).flatten.any?(&:honour?)
 
-      score(all_sets_have_outside_tile &&
-            has_chow &&
-            has_suit &&
-            has_honour, 2)
+      all_sets_have_outside_tile &&
+        has_chow &&
+        has_suit &&
+        has_honour
     end
 
-    def chinitsu(arrangement)
+    def chinitsu?(arrangement)
       tiles = (arrangement + melds).flatten
-      has_pure_flush = tiles.first.suited? &&
+      tiles.first.suited? &&
         tiles.all? { |tile| tile.suit == tiles.first.suit }
-
-      score(has_pure_flush, 6)
     end
   end
 end
