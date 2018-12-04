@@ -194,6 +194,14 @@ module Riichi
       closed? && all_chows && two_sided_wait && valueless_atama ? 1 : 0
     end
 
+    def score(condition, closed_score, open_score: closed_score - 1)
+      if condition
+        closed? ? closed_score : open_score
+      else
+        0
+      end
+    end
+
     def honitsu(arrangement)
       suits = (arrangement + melds).group_by { |set| set.first.suit }
 
@@ -252,6 +260,14 @@ module Riichi
       else
         0
       end
+    end
+
+    def chinitsu(arrangement)
+      tiles = (arrangement + melds).flatten
+      has_pure_flush = tiles.first.suited? &&
+        tiles.all? { |tile| tile.suit == tiles.first.suit }
+
+      score(has_pure_flush, 6)
     end
   end
 end

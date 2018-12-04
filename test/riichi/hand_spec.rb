@@ -420,4 +420,31 @@ describe Hand do
     end
   end
 
+  describe "chinitsu" do
+    it "reports 0 when not pure flush" do
+      hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - 1p 1p 1p - Rd Rd")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chinitsu(arrangement).must_equal(0, hand)
+      end
+    end
+
+    # TODO 9 gates
+    it "reports 6 when closed" do
+      hand = Hand.new("1p 2p 3p 1p 2p 3p 7p 8p 9p - 4p 4p 4p - 2p 2p")
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chinitsu(arrangement).must_equal(6, hand)
+      end
+    end
+
+    it "reports 5 when open" do
+      hand = Hand.new("1p 2p 3p 7p 8p 9p - 4p 4p 4p - 2p 2p",
+        melds: [Tile.to_tiles("1p 2p 3p")])
+      hand.complete?.must_equal(true)
+      hand.complete_arrangements.each do |arrangement|
+        hand.chinitsu(arrangement).must_equal(5, hand)
+      end
+    end
+  end
 end
