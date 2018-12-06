@@ -4,13 +4,23 @@ Richii Mah Jong hand calculator.
 
 To experiment, run `bin/console` for an interactive prompt.
 
-# TODO
+## TODO rare hands
 
-- complete hand check, add in special hands
-- kong
-- draw and play something
-- scoring with stated bonuses
-- counting bonuses
+- junchan
+- sho san gen
+- honroto
+- ryan peiko
+- koku shimusou 13 orphans
+- chuuren pooto 9 gates
+- suu anko
+- ryuu iisou all green
+- chinrouto all terminals
+- tsu issou all honours
+- dai sangen big 3 dragons
+- shou suushi little 4 winds
+- dai suushi big 4 winds
+- draw dependent
+- action dependent yaku
 
 ## Installation
 

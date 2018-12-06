@@ -111,7 +111,7 @@ module Riichi
     # Array if there are no such tiles (i.e., not tenpai).
     def waiting_tiles(arrangement)
       # TODO: check that waiting tiles are not used up in rest of hand
-      # TODO: chitoi, 9 gates, 13 orphans (hmm...maybe 9 gates ok)
+      # TODO: 9 gates, 13 orphans (hmm...maybe 9 gates ok)
       unmatched = Tile.diff(tiles, arrangement)
 
       if unmatched.length == 1
@@ -259,5 +259,6 @@ module Riichi
     def san_anko?(arrangement)
       arrangement.count { |set| Tile.pung?(set) } >= 3
     end
+
   end
 end
