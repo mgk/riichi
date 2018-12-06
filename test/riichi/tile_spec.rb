@@ -219,6 +219,9 @@ describe Tile do
           [["Rd Rd Rd"]]
         ],
 
+        # # chii toitsu - only 6 of 7 pairs
+        ["5m 9p --- 1m 1m  2s 2s  3p 3p  4p 4p  5s 5s  6m 6m", []],
+
         # 13 orphans - one of each - 13 sided wait!
         [   "1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Gd Rd", [
           %w(1m 9m 1s 9s 1p 9p Ew Sw Ww Nw Wd Gd Rd)

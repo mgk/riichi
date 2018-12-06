@@ -117,7 +117,7 @@ module Riichi
     end
 
     def self.to_tiles(str)
-      str.tr('-', ' ').split(' ').map { |s| to_tile(s) }
+      str.tr('-', ' ').tr(',', ' ').split(' ').map { |s| to_tile(s) }
     end
 
     def self.set?(tiles)
@@ -283,8 +283,8 @@ module Riichi
     end
 
     def self.chii_toi_arrangement(tiles)
-      pairs = self.pairs(tiles).first
-      pairs.length >= 6 ? pairs : nil
+      pairs, rest = self.pairs(tiles)
+      pairs.length >= 6 && rest.length < 2 ? pairs : nil
     end
 
     def self.kokushimuso_arrangement(tiles)

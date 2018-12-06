@@ -2,8 +2,6 @@ require 'spec_helper'
 
 describe Hand do
 
-  def t(s); Tile.to_tiles(s); end
-
   describe "complete?" do
     it "returns false for incomplete hands" do
       [
