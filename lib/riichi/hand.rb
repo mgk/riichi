@@ -140,11 +140,7 @@ module Riichi
     end
 
     def to_s
-      # This might be nicer, need to reconcile with Tile.to_s
-      # suited = @tiles.find_all(&:suited?).group_by(&:suit).map do |suit, tiles|
-      #   "#{suit[0]}#{tiles.map(&:rank).join}"
-      # end.join(" ")
-      "tiles: #{tiles}, open: #{melds}, discards: #{discards}"
+      "tiles: #{Tile.to_short_s(tiles)}, open: #{Tile.to_short_s(melds)}, discards: #{discards}"
     end
 
     def yaku

@@ -228,7 +228,7 @@ describe Hand do
       end
     end
 
-    it "reports true when closed with one suit and honors" do
+    it "reports true when closed with one suit and honours" do
       hand = Hand.new("1p 1p 1p - 1p 2p 3p - Gd Gd Gd - 9p 9p 9p - Nw Nw")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|
@@ -236,7 +236,7 @@ describe Hand do
       end
     end
 
-    it "reports true when closed, one suit, all chows, and honors" do
+    it "reports true when closed, one suit, all chows, and honours" do
       hand = Hand.new("1p 2p 3p - 1p 2p 3p - 1p 2p 3p - 1p 2p 3p - Nw Nw")
       hand.complete?.must_equal(true)
       hand.complete_arrangements.each do |arrangement|

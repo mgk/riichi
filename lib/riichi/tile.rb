@@ -24,7 +24,7 @@ module Riichi
     # @return [String] pretty string representation
     attr_reader :pretty
 
-    # @return [String] short string representation (honor tiles only)
+    # @return [String] short string representation (honour tiles only)
     attr_reader :short
 
     def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil, short: nil)
@@ -40,7 +40,7 @@ module Riichi
     end
     private_class_method :new
 
-    # @return [true, false] if honor tile
+    # @return [true, false] if honour tile
     def honour?
       wind? || dragon?
     end
@@ -149,8 +149,14 @@ module Riichi
     def self.to_short_s(tiles)
       suited = [:manzu, :sozu, :pinzu].map do |suit|
         ranks = tiles.find_all { |t| t.suit == suit }.map(&:rank)
-        ranks.empty? ? "" : "#{suit}#{ranks.join('')}"
+        ranks.empty? ? '' : "#{suit[0]}#{ranks.join('')}"
       end
+
+      honours = [:east, :south, :west, :north, :white, :green, :red].map do |id|
+        tiles.find_all { |t| t == @tiles[id] }.map(&:short).join('')
+      end
+
+      (suited + honours).reject(&:empty?).join(' ')
     end
 
     def self.set?(tiles)
@@ -379,7 +385,7 @@ module Riichi
         end
       end
 
-      honors = [
+      honours = [
         new(wind:   :east,  str: 'Ew', pretty: '東', short: 'e'),
         new(wind:   :south, str: 'Sw', pretty: '南', short: 's'),
         new(wind:   :west,  str: 'Ww', pretty: '西', short: 'w'),
@@ -389,7 +395,7 @@ module Riichi
         new(dragon: :red,   str: 'Rd', pretty: '中', short: 'R'),
       ]
 
-      (suited_tiles + honors).each_with_index.map do |t, i|
+      (suited_tiles + honours).each_with_index.map do |t, i|
         new(type: i + 1,
                  str: t.str,
                  pretty: t.pretty,
@@ -419,7 +425,7 @@ module Riichi
 
     # tiles keyed by their string representations
     # suited tiles have one string representation,
-    # honor tiles have two
+    # honour tiles have two
     @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h
     by_short_name = @tiles_by_str.values.find_all(&:honour?).map do |t|
       [t.short, t]
