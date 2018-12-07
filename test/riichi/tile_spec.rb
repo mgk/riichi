@@ -21,6 +21,31 @@ describe Tile do
       t.dragon.must_be_nil
     end
 
+    it "works for short strings" do
+      [
+        ['W', 'Wd'], ['G', 'Gd'], ['R', 'Rd'],
+        ['e', 'Ew'], ['s', 'Sw'], ['w', 'Ww'], ['n', 'Nw']
+      ].each do |short_string, str|
+        assert Tile.to_tile(short_string) == Tile.to_tile(str)
+      end
+    end
+  end
+
+  describe "to_tiles" do
+    it "readable strings work" do
+      [
+        ["m123 p22 s1",      "1m 2m 3m - 2p 2p - 1s"],
+        ["m(1) p[2] s{3}",   "1m 2p 3s"],
+        ["WGR W",            "Wd Gd Rd Wd"],
+        ["eswn Ww",          "Ew Sw Ww Nw Wd Ww"],
+      ].each do |short, long|
+        assert Tile.to_tiles(short) == Tile.to_tiles(long)
+      end
+    end
+
+    it "Ww is West Wind" do
+      assert Tile.to_tiles("Ww") == [Tile.to_tile("Ww")]
+    end
   end
 
   describe "diff" do

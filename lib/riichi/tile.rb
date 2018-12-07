@@ -24,7 +24,10 @@ module Riichi
     # @return [String] pretty string representation
     attr_reader :pretty
 
-    def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil)
+    # @return [String] short string representation (honor tiles only)
+    attr_reader :short
+
+    def initialize(type: nil, suit: nil, rank: nil, wind: nil, dragon: nil, str: nil, pretty: nil, short: nil)
       @type = type
       @suit = suit
       @rank = rank
@@ -32,8 +35,10 @@ module Riichi
       @dragon = dragon
       @str = str
       @pretty = pretty
+      @short = short
       freeze
     end
+    private_class_method :new
 
     # @return [true, false] if honor tile
     def honour?
@@ -116,8 +121,36 @@ module Riichi
       end
     end
 
+    TILE_PATTERN = /(([mps][1-9]+)|[WGReswn])/
+
+    # Parse tile string into array of short tiles.
+    # The string can either be in regular long form
+    # or in short form.
+    #
+    # @param [String] str string to Parse
+    # @example
+    #  long = "1p 1p 1p 1s 2s 3s Gd Rd Rd"
+    #  short = "p111 s123 G RR"
+    #  Tile.to_tiles(long) == Tile.to_tiles(short) #=> true
+    # @return [Array<Tile>] tiles represented by str
     def self.to_tiles(str)
-      str.tr('-', ' ').tr(',', ' ').split(' ').map { |s| to_tile(s) }
+      str.tr('-,', ' ').split(' ').map { |tile| Tile.to_tile(tile) }
+    rescue
+      str.tr('()[]{}', '').scan(TILE_PATTERN).map(&:first).flat_map do |match|
+        if match.length == 1
+          Tile.to_tile(match)
+        else
+          suit, *ranks = match.chars
+          ranks.map { |rank| Tile.to_tile(rank + suit) }
+        end
+      end
+    end
+
+    def self.to_short_s(tiles)
+      suited = [:manzu, :sozu, :pinzu].map do |suit|
+        ranks = tiles.find_all { |t| t.suit == suit }.map(&:rank)
+        ranks.empty? ? "" : "#{suit}#{ranks.join('')}"
+      end
     end
 
     def self.set?(tiles)
@@ -342,28 +375,29 @@ module Riichi
         [:manzu, '萬'], [:sozu, '‖'], [:pinzu, '⨷']
       ].flat_map do |suit, pretty|
         (1..9).map do |rank|
-          Tile.new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}", pretty: "#{rank}#{pretty}")
+          new(suit: suit, rank: rank, str: "#{rank}#{suit[0]}", pretty: "#{rank}#{pretty}")
         end
       end
 
       honors = [
-        Tile.new(wind:   :east,  str: 'Ew', pretty: '東'),
-        Tile.new(wind:   :south, str: 'Sw', pretty: '南'),
-        Tile.new(wind:   :west,  str: 'Ww', pretty: '西'),
-        Tile.new(wind:   :north, str: 'Nw', pretty: '北'),
-        Tile.new(dragon: :white, str: 'Wd', pretty: '白'),
-        Tile.new(dragon: :green, str: 'Gd', pretty: '發'),
-        Tile.new(dragon: :red,   str: 'Rd', pretty: '中'),
+        new(wind:   :east,  str: 'Ew', pretty: '東', short: 'e'),
+        new(wind:   :south, str: 'Sw', pretty: '南', short: 's'),
+        new(wind:   :west,  str: 'Ww', pretty: '西', short: 'w'),
+        new(wind:   :north, str: 'Nw', pretty: '北', short: 'n'),
+        new(dragon: :white, str: 'Wd', pretty: '白', short: 'W'),
+        new(dragon: :green, str: 'Gd', pretty: '發', short: 'G'),
+        new(dragon: :red,   str: 'Rd', pretty: '中', short: 'R'),
       ]
 
       (suited_tiles + honors).each_with_index.map do |t, i|
-        Tile.new(type: i + 1,
+        new(type: i + 1,
                  str: t.str,
                  pretty: t.pretty,
                  suit: t.suit,
                  rank: t.rank,
                  wind: t.wind,
-                 dragon: t.dragon)
+                 dragon: t.dragon,
+                 short: t.short)
       end
     end
     private_class_method :_tile_types
@@ -372,6 +406,7 @@ module Riichi
       @deck
     end
 
+    # tiles keyed by property
     @tiles = _tile_types.map do |tile|
       key = case
       when tile.suited? then [tile.suit, tile.rank]
@@ -382,8 +417,17 @@ module Riichi
       [key, tile]
     end.to_h.freeze
 
-    @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h.freeze
+    # tiles keyed by their string representations
+    # suited tiles have one string representation,
+    # honor tiles have two
+    @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h
+    by_short_name = @tiles_by_str.values.find_all(&:honour?).map do |t|
+      [t.short, t]
+    end.to_h
+    @tiles_by_str.merge!(by_short_name)
+    @tiles_by_str.freeze
 
+    # a full deck is 4 of eack tile
     @deck = (_tile_types * 4).freeze
     freeze
   end

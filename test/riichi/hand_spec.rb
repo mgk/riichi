@@ -79,6 +79,7 @@ describe Hand do
   describe "complete?" do
     it "reports true for complete hands" do
       [
+        's111 p222 m333 GGG RR',
         '1s 1s 1s - 2p 2p 2p - 3m 3m 3m - Gd Gd Gd - Rd Rd',
         '1s 1s - 2p 2p - 3s 3s - 4m 4m - 5s 5s - 6p 6p - 7s 7s',
       ].each do |tiles|
