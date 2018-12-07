@@ -110,7 +110,10 @@ module Riichi
     # @param [String] tile string, as returned by {Tile#to_s}
     # @return [Tile] the specified Tile
     def self.to_tile(tile)
-      @tiles_by_str.fetch(tile)
+      case tile
+      when Tile then tile
+      when String then @tiles_by_str.fetch(tile)
+      end
     end
 
     def self.get(suit: nil, rank: nil, wind: nil, dragon: nil)

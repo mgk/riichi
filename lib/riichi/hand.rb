@@ -38,14 +38,90 @@ module Riichi
       end
     end
 
-    def draw(tile)
+    # Draw a tile from the wall
+    #
+    # @param [Tile, String] tile drawn
+    def draw!(tile)
+      tile = Tile.to_tile(tile)
+
+      unless @tiles.length % 3 == 1
+        raise ArgumentError, "wrong number of tiles: #{self}"
+      end
+
+      tile = Tile.to_tile(tile)
       @draws << tile
       @tiles << tile
       @tiles.sort!
+
+      self
     end
 
-    def discard(tile)
+    # Discard a tile.
+    #
+    # @param [Tile, String] tile to discard
+    def discard!(tile)
+      tile = Tile.to_tile(tile)
+
+      unless tiles.length % 3 == 2
+        raise ArgumentError, "wrong number of tiles: #{self}"
+      end
+      unless @tiles.includes?(tile)
+        raise ArgumentError, "tile #{tile} not in hand: #{self}"
+      end
+
+      @tiles = Tile.diff(@tiles, [tile])
       @discards << tile
+
+      self
+    end
+
+    # Create an open pung meld of the given tile.
+    #
+    # @param [Tile, String] tile called tile discarded by opponent
+    def pung!(tile)
+      tile = Tile.to_tile(tile)
+
+      unless @tiles.includes_all?([tile, tile])
+        raise ArgumentError, "pair of #{tile} not in hand: #{self}"
+      end
+
+      @tiles = Tile.diff(@tiles, [tile, tile])
+      @melds += [tile, tile, tile]
+
+      self
+    end
+
+    # Create an open chow meld.
+    #
+    # @param [Tile, String] tile called tile discarded by opponent
+    # @param [Array<Tile>, String, Array<Integer>] tatsu 2 tiles in hand that
+    # complete the chow when combined with the called tile.
+    def chi!(tile, tatsu)
+      tile = Tile.to_tile(tile)
+      if tatsu.is_a? String
+        tatsu = Tile.to_tiles(tatsu)
+      elsif tatsu.first.is_a? Integer
+        tatsu = tatsu.map { |rank| Tile.get(suit: tile.suit, rank: rank)}
+      end
+      meld = (tatsu + [tile]).sort
+
+      unless Tile.chow?(meld)
+        raise ArgumentError, "#{meld.inspect} not a chow"
+      end
+      unless @tiles.includes_all?(tatsu)
+        raise ArgumentError, "#{tatsu} not in hand: #{self}"
+      end
+
+      @tiles = Tile.diff(@tiles, tatsu)
+      @melds += meld
+
+      self
+    end
+
+    def tsumo!
+    end
+
+    def ron!(tile)
     end
 
     def last_draw
@@ -147,6 +223,7 @@ module Riichi
       if !complete?
         return nil
       end
+
       complete_arrangements.map do |arrangement|
         [
           :tanyao,

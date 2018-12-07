@@ -169,7 +169,7 @@ describe Hand do
 
     it "reports false for a middle wait" do
       hand = Hand.new('--5p 7p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
-      hand.draw(Tile.to_tile('6p'))
+      hand.draw!(Tile.to_tile('6p'))
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
       hand.pinfu?(arrangement).must_equal(false, hand)
@@ -178,7 +178,7 @@ describe Hand do
     it "reports false for a one sided end waits" do
       [['8p 9p', '7p'], ['1p 2p', '3p']].each do |tatsu, winning_tile|
         hand = Hand.new("#{tatsu} 1s 2s 3s - 1m 2m 3m - 6m 7m 8m - 7s 7s")
-        hand.draw(Tile.to_tile(winning_tile))
+        hand.draw!(Tile.to_tile(winning_tile))
         hand.complete_arrangements.length.must_equal(1)
         arrangement = hand.complete_arrangements.first
         hand.pinfu?(arrangement).must_equal(false, hand)
@@ -187,7 +187,7 @@ describe Hand do
 
     it "reports true for pinfu" do
       hand = Hand.new('--5p 6p-- 1s 2s 3s - 1p 2p 3p - 6m 7m 8m - 7s 7s')
-      hand.draw(Tile.to_tile('4p'))
+      hand.draw!(Tile.to_tile('4p'))
       hand.complete_arrangements.length.must_equal(1)
       arrangement = hand.complete_arrangements.first
       hand.pinfu?(arrangement).must_equal(true, hand)
