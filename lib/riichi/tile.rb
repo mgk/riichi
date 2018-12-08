@@ -139,7 +139,7 @@ module Riichi
     def self.to_tiles(str)
       str.tr('-,', ' ').split(' ').map { |tile| Tile.to_tile(tile) }
     rescue
-      str.tr('()[]{}', '').scan(TILE_PATTERN).map(&:first).flat_map do |match|
+      str.tr('-_()[]{}', '').scan(TILE_PATTERN).map(&:first).flat_map do |match|
         if match.length == 1
           Tile.to_tile(match)
         else

@@ -98,34 +98,6 @@ describe Hand do
     end
   end
 
-  describe "tanyao?" do
-    simple_tiles = "2s 2s 2s  4s 5s 6s  7s 7s 7s  2p 2p 2p"
-
-    it "reports true when present" do
-      ["3p 3p", "2m 2m"].each do |atama|
-        hand = Hand.new(simple_tiles + " " + atama)
-        hand.complete_arrangements.length.must_equal(1)
-        arrangement = hand.complete_arrangements.first
-        hand.tanyao?(arrangement).must_equal(true, hand)
-
-        # Same hand with 4 open melds
-        melds = arrangement.take(4)
-        open_hand = Hand.new(atama, melds: melds)
-        open_hand.tanyao?(arrangement.drop(4)).must_equal(true, hand)
-      end
-    end
-
-    it "reports false when not present" do
-      ["Ww Ww", "1s 1s"].each do |atama|
-        hand = Hand.new(simple_tiles + " " + atama)
-        hand.complete_arrangements.length.must_equal(1)
-        arrangement = hand.complete_arrangements.first
-        hand.tanyao?(arrangement).must_equal(false, hand)
-      end
-    end
-
-  end
-
   describe "yakuhai_count" do
     other_tiles = "2s 2s 2s  4s 5s 6s  9s 9s"
 

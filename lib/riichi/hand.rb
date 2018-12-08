@@ -27,7 +27,10 @@ module Riichi
       when Array then tiles
       end.sort
 
-      @melds = melds
+      @melds = [melds].flatten(1).map do |meld|
+        meld.is_a?(String) ? Tile.to_tiles(meld) : meld
+      end
+
       @bakaze = bakaze
       @jikaze = jikaze
       @discards = discards
@@ -216,7 +219,7 @@ module Riichi
     end
 
     def to_s
-      "tiles: #{Tile.to_short_s(tiles)}, open: #{Tile.to_short_s(melds)}, discards: #{discards}"
+      "tiles: #{Tile.to_short_s(tiles)}, open: #{melds.inspect}, discards: #{discards}"
     end
 
     def yaku
@@ -236,10 +239,6 @@ module Riichi
           y[1] > 0
         end
       end
-    end
-
-    def tanyao?(arrangement)
-      (melds + arrangement).flatten.all?(&:simple?)
     end
 
     def has_pung_of?(arrangement, tile)

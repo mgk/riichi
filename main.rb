@@ -9,6 +9,12 @@ def t(s); Riichi::Tile.to_tiles(s); end
 # Kernel.exit
 # p Riichi::Tile.connectors(t('1s 2s 3s 4s'))
 
+hand = Riichi::Hand.new("s222333444 m123 m88")
+puts hand
+arrangement = hand.complete_arrangements.first
+puts Riichi::Score::Tanyao.new(hand, arrangement).count
+Kernel.exit
+
 [
   "Ww Ww Nw Wd 1p 2p 4p",
   "2m 2m 3m 3m 4m 4m 5m",

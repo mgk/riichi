@@ -1,4 +1,6 @@
-require_relative 'riichi/version'
+require 'require_all'
 
-require_relative 'riichi/tile'
-require_relative 'riichi/hand'
+require_relative 'riichi/version'
+require_relative 'riichi/score/hand_counter'
+
+require_rel 'riichi'
