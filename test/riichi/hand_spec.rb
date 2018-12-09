@@ -98,6 +98,20 @@ describe Hand do
     end
   end
 
+  describe "complete_arrangements" do
+    it "reports the complete arrangements" do
+      [
+        ["RR", ["eee sss www nnn"], [["RR"]] ],
+      ].each do |tiles, melds, arrangements|
+        actual = Hand.new(tiles, melds: melds).complete_arrangements
+        expected = arrangements.map do |arrangement|
+          arrangement.map { |set| Tile.to_tiles(set) }
+        end
+        actual.must_equal(expected, [tiles, melds])
+      end
+    end
+  end
+
   describe "yakuhai_count" do
     other_tiles = "2s 2s 2s  4s 5s 6s  9s 9s"
 
@@ -225,31 +239,6 @@ describe Hand do
       end
     end
 
-  end
-
-  describe "toitoi?" do
-    it "reports false when not all pungs" do
-      hand = Hand.new('1s 2s 3s - 1m 1m 1m - 2p 2p 2p - 3m 3m 3m -7s 7s')
-      hand.complete_arrangements.length.must_equal(1)
-      arrangement = hand.complete_arrangements.first
-      hand.toitoi?(arrangement).must_equal(false, hand)
-    end
-
-    it "reports true when all pungs closed hand" do
-      hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2p 2p 2p - 3m 3m 3m -7s 7s')
-      hand.complete_arrangements.length.must_equal(1)
-      arrangement = hand.complete_arrangements.first
-      hand.toitoi?(arrangement).must_equal(true, hand)
-    end
-
-    it "reports true when all pungs for open hand" do
-      hand = Hand.new('1s 1s 1s - 1m 1m 1m - 2m 2m 2m - 7s 7s',
-        melds: [Tile.to_tiles('Ww Ww Ww')])
-      hand.open?.must_equal(true)
-      hand.complete_arrangements.length.must_equal(1)
-      arrangement = hand.complete_arrangements.first
-      hand.toitoi?(arrangement).must_equal(true, hand)
-    end
   end
 
   describe "mixed_triple_chow? (san shoku dojun)" do

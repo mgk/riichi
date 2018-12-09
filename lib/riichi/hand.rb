@@ -41,6 +41,11 @@ module Riichi
       end
     end
 
+    def valid?
+      (@tiles + @melds.flatten).length.between?(13, 14) &&
+        @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
+    end
+
     # Draw a tile from the wall
     #
     # @param [Tile, String] tile drawn
@@ -131,11 +136,6 @@ module Riichi
       @draws.last
     end
 
-    def valid?
-      (@tiles + @melds.flatten).length.between?(13, 14) &&
-        @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
-    end
-
     def open?
       !closed?
     end
@@ -167,7 +167,7 @@ module Riichi
       end
 
       if Tile.pair?(tiles)
-        return [tiles]
+        return [[tiles]]
       end
 
       Tile.arrangements(tiles)
@@ -277,11 +277,6 @@ module Riichi
     def honitsu?(arrangement)
       suits = (arrangement + melds).group_by { |set| set.first.suit }
       suits.length == 2 && suits.include?(nil)
-    end
-
-    def toitoi?(arrangement)
-      *sets, _atama = arrangement
-      (sets + melds).all? { |set| Tile.pung?(set) }
     end
 
     def chii_toitsu?(arrangement)

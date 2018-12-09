@@ -2,8 +2,15 @@ module Riichi::Score
 
   # Hand counter base
   class HandCounter
+
+    # @return [Array<Array<Tiles>>] open melds in the hand
     attr :hand
-    attr :arrangement
+
+    # @return [Array<Array<Tiles>>] closed sets in the hand arrangement
+    attr :sets
+
+    # @return [Array<Array<Tiles>>] atama (head) in the hand arrangement
+    attr :atama
 
     # Determine if the hand yaku is present. Subsclasses
     # must implement this.
@@ -31,19 +38,24 @@ module Riichi::Score
     # @return [HandCounter] counter
     def initialize(hand, arrangement)
       @hand = hand
-      @arrangement = arrangement
+      *@sets, @atama = arrangement
     end
 
-    # Get the melds in the hand.
-    # @return [Array<Array<Tile>>] melds in the hand
+    # @return [Array<Array<Tiles>>] open melds in the hand
     def melds
       hand.melds
     end
 
-    # Get all the tiles in the hand, including the open melds
-    # @return [Array<Tile>]
-    def tiles
-      (melds + arrangement).flatten
+    # @return [Array<Tile>] all the tiles in the hand, including
+    # the open melds
+    def all_tiles
+      (melds + sets + atama).flatten
+    end
+
+    # @return [Array<Tile>] all the sets in the hand, including
+    # the open melds
+    def all_sets
+      sets + melds
     end
 
     # Get the points to score for the hand when it is open

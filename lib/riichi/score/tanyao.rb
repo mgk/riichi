@@ -5,7 +5,7 @@ module Riichi::Score
     end
 
     def present?
-      tiles.all?(&:simple?)
+      all_tiles.all?(&:simple?)
     end
   end
 end

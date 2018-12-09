@@ -181,6 +181,7 @@ describe Tile do
     it "determines all chows, pungs, and complete special hands in tiles" do
       test_cases = [
         ["",                      []  ],
+        ["p11",                   []  ],
         ["Ww Ww Nw Wd 1p 2p 4p",  []  ],
         ["1p 2p 3p",              [["1p 2p 3p"]] ],
         ["1p 2p 3p 4p",           [["1p 2p 3p"], ["2p 3p 4p"]]  ],
