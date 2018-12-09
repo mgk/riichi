@@ -251,32 +251,12 @@ module Riichi
       value_tiles.count { |tile| has_pung_of?(arrangement, tile) }
     end
 
-    def pinfu?(arrangement)
-      *sets, atama = arrangement
-
-      all_chows = sets.all? { |set| Tile.chow? set }
-
-      two_sided_wait = sets.any? do |set|
-        (last_draw == set.first && last_draw.rank != 7) ||
-          (last_draw == set.last && last_draw.rank != 3)
-      end
-
-      valueless_atama = !value_tiles.include?(atama[0])
-
-      closed? && all_chows && two_sided_wait && valueless_atama
-    end
-
     private def score(condition, closed_score, open_score: closed_score - 1)
       if condition
         closed? ? closed_score : open_score
       else
         0
       end
-    end
-
-    def honitsu?(arrangement)
-      suits = (arrangement + melds).group_by { |set| set.first.suit }
-      suits.length == 2 && suits.include?(nil)
     end
 
     def chii_toitsu?(arrangement)
@@ -315,12 +295,6 @@ module Riichi
         has_chow &&
         has_suit &&
         has_honour
-    end
-
-    def chinitsu?(arrangement)
-      tiles = (arrangement + melds).flatten
-      tiles.first.suited? &&
-        tiles.all? { |tile| tile.suit == tiles.first.suit }
     end
 
     def san_anko?(arrangement)

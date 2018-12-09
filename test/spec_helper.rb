@@ -16,12 +16,10 @@ Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
 require 'minitest-spec-context'
 
-def hand_counter(tiles, melds: [])
-  hand = Hand.new(tiles, melds: melds)
+def hand_counter(hand)
+  hand.complete_arrangements.length.must_equal(1, "bad test: #{hand}")
 
-  hand.complete_arrangements.length.must_equal(1, "too many wins: #{hand}")
-
-  # Find the first "describe XXX" where XXX is a HandCounter
+  # Find the innermost "describe XXX" where XXX is a HandCounter
   cls = self.class.ancestors.find do |a|
     a.respond_to?(:desc) &&
       a.desc.kind_of?(Class) &&
@@ -31,6 +29,11 @@ def hand_counter(tiles, melds: [])
   cls.new(hand, hand.complete_arrangements.first)
 end
 
-def yaku_count(tiles, melds: [])
-  hand_counter(tiles, melds: melds).count
+def yaku_count(hand_or_tiles, melds: [])
+  hand = case hand_or_tiles
+  when Hand then hand_or_tiles
+  else Hand.new(hand_or_tiles, melds: melds)
+  end
+
+  hand_counter(hand).count
 end

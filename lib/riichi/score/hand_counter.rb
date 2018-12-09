@@ -23,8 +23,8 @@ module Riichi::Score
     # Get the yaku points for this hand if the yaku is present.
     # Subclasses must implement this.
     #
-    # @return [Array<Integer>] array of length 2: the closed points
-    # and the open points
+    # @return [Array<Integer>] array of length 2: the open points
+    # and the closed points
     def points
       raise NotImplementedError
     end
@@ -70,10 +70,14 @@ module Riichi::Score
       points[1]
     end
 
+    def closed?
+      hand.closed?
+    end
+
     # Count the hand arrangement.
     def count
       if present?
-        hand.closed? ? closed_points : open_points
+        closed? ? closed_points : open_points
       else
         0
       end
