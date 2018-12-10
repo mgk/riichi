@@ -241,15 +241,5 @@ module Riichi
       end
     end
 
-    def has_pung_of?(arrangement, tile)
-      (melds + arrangement).any? do |set|
-        Tile.pung?(set) && set.first == tile
-      end
-    end
-
-    def san_anko?(arrangement)
-      arrangement.count { |set| Tile.pung?(set) } >= 3
-    end
-
   end
 end

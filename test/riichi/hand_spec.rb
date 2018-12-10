@@ -112,40 +112,4 @@ describe Hand do
     end
   end
 
-  describe "san_anko?" do
-    it "reports false with only 2 pungs" do
-      hand = Hand.new("1m 1m 1m - 2m 2m 2m - 3m 4m 5m - 5m 6m 7m - Nw Nw")
-      hand.complete?.must_equal(true, hand)
-      hand.complete_arrangements.each do |arrangement|
-        hand.san_anko?(arrangement).must_equal(false, hand)
-      end
-    end
-
-    it "reports false with 2 closed pungs and 1 open" do
-      hand = Hand.new("1m 1m 1m - 2m 2m 2m - 3m 4m 5m - Nw Nw",
-          melds: [Tile.to_tiles("Gd Gd Gd")])
-      hand.complete?.must_equal(true, hand)
-      hand.complete_arrangements.each do |arrangement|
-        hand.san_anko?(arrangement).must_equal(false, hand)
-      end
-    end
-
-    it "reports true with 3 concealed pungs" do
-      hand = Hand.new("1m 1m 1m - 2m 2m 2m - 4m 4m 4m - 5m 6m 7m - Nw Nw")
-      hand.complete?.must_equal(true, hand)
-      hand.complete_arrangements.each do |arrangement|
-        hand.san_anko?(arrangement).must_equal(true, hand)
-      end
-    end
-
-    it "reports true with 3 concealed pungs and 1 open pung" do
-      hand = Hand.new("1m 1m 1m - 2m 2m 2m - 4s 4s 4s - Nw Nw",
-          melds: [Tile.to_tiles("Gd Gd Gd")])
-      hand.complete?.must_equal(true, hand)
-      hand.complete_arrangements.each do |arrangement|
-        hand.san_anko?(arrangement).must_equal(true, hand)
-      end
-    end
-
-  end
 end
