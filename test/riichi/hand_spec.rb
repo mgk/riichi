@@ -112,40 +112,6 @@ describe Hand do
     end
   end
 
-  describe "mixed_triple_chow? (san shoku dojun)" do
-    it "reports false when not present" do
-      ['1s 2s 3s - 1m 2m 3m - 2p 3p 4p - 3m 3m 3m -7s 7s',
-        '1s 2s 3s - 1m 2m 3m - 1m 2m 3m - 5m 5m 5m -7s 7s'].each do |hand|
-        hand = Hand.new(hand)
-        arrangement = hand.complete_arrangements.first
-        arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow?(arrangement).must_equal(false, hand)
-      end
-    end
-
-    it "reports true when present for closed hands" do
-      ['1s 2s 3s - 1m 2m 3m - 1p 2p 3p - 3m 3m 3m -7s 7s',
-        '4s 5s 6s - 4m 5m 6m - 4p 5p 6p - Rd Rd Rd - Ew Ew'].each do |hand|
-        hand = Hand.new(hand)
-        arrangement = hand.complete_arrangements.first
-        arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow?(arrangement).must_equal(true, hand)
-      end
-    end
-
-    it "reports true when present for open hands" do
-      [
-        ['1s 2s 3s - 1m 2m 3m - 1p 2p 3p', '7s 7s 7s'],
-        ['4s 5s 6s - 4m 5m 6m - Rd Rd Rd', '4p 5p 6p'],
-      ].each do |tiles, meld|
-        hand = Hand.new(tiles + ' Sw Sw', melds: [Tile.to_tiles(meld)])
-        arrangement = hand.complete_arrangements.first
-        arrangement.empty?.must_equal(false)
-        hand.mixed_triple_chow?(arrangement).must_equal(true, hand)
-      end
-    end
-  end
-
   describe "ittsu?" do
     it "reports 0 when straight in suit is not complete" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 7m 7m")

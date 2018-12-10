@@ -247,14 +247,6 @@ module Riichi
       end
     end
 
-    def mixed_triple_chow?(arrangement)
-      *sets, _atama = arrangement
-      chows = (sets + melds).find_all { |set| Tile.chow?(set) }
-      groups = chows.map(&:first).group_by(&:rank).values
-
-      groups.any? { |g| Set.new(g.map(&:suit)).length == 3 }
-    end
-
     def ittsu?(arrangement)
       *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }
