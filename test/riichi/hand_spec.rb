@@ -112,41 +112,6 @@ describe Hand do
     end
   end
 
-  describe "ittsu?" do
-    it "reports 0 when straight in suit is not complete" do
-      hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 7m 7m")
-      hand.complete?.must_equal(true)
-      hand.complete_arrangements.each do |arrangement|
-        hand.ittsu?(arrangement).must_equal(false, hand)
-      end
-    end
-
-    it "reports 0 when not all chows are present" do
-      hand = Hand.new("1p 2p 3p - 3p 4p 5p - 6p 7p 8p - 7p 8p 9p - 7m 7m")
-      hand.complete?.must_equal(true)
-      hand.complete_arrangements.each do |arrangement|
-        hand.ittsu?(arrangement).must_equal(false, hand)
-      end
-    end
-
-    it "reports 2 when closed" do
-      hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - Gd Gd Gd - 7m 7m")
-      hand.complete?.must_equal(true)
-      hand.complete_arrangements.each do |arrangement|
-        hand.ittsu?(arrangement).must_equal(true, hand)
-      end
-    end
-
-    it "reports 1 when open" do
-      hand = Hand.new("1p 2p 3p 4p 5p 6p 7p 8p 9p - 7m 7m",
-        melds: [Tile.to_tiles("Gd Gd Gd")])
-      hand.complete?.must_equal(true)
-      hand.complete_arrangements.each do |arrangement|
-        hand.ittsu?(arrangement).must_equal(true, hand)
-      end
-    end
-  end
-
   describe "chanta?" do
     it "reports false when not all sets include outside tile" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 9m 9m")

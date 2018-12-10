@@ -247,17 +247,6 @@ module Riichi
       end
     end
 
-    def ittsu?(arrangement)
-      *sets, _atama = arrangement
-      chows = (sets + melds).find_all { |set| Tile.chow?(set) }
-      suits = chows.group_by { |chow| chow.first.suit }.values
-
-      suits.any? do |suit_chows|
-        starting_tiles = Set.new(suit_chows.map(&:first).map(&:rank))
-        starting_tiles.superset?(Set[1, 4, 7])
-      end
-    end
-
     def chanta?(arrangement)
       all_sets_have_outside_tile = (arrangement + melds).all? do |set|
         set.any? { |tile| tile.terminal? || tile.honour? }
