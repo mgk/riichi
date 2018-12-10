@@ -116,7 +116,7 @@ module Riichi
       end
     end
 
-    def self.get(id: id, suit: nil, rank: nil, wind: nil, dragon: nil)
+    def self.get(id: nil, suit: nil, rank: nil, wind: nil, dragon: nil)
       case
       when id then @tiles[id]
       when suit then @tiles[[suit, rank]]

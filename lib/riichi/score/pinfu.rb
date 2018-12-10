@@ -6,7 +6,7 @@ module Riichi::Score
     end
 
     def all_chows?
-      all_chows = all_sets.all? { |set| Tile.chow? set }
+      all_sets.all? { |set| Tile.chow? set }
     end
 
     def valueless_atama?
