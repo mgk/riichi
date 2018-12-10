@@ -12,8 +12,8 @@ module Riichi::Score
     # @return [Array<Array<Tiles>>] atama (head) in the hand arrangement
     attr :atama
 
-    # Determine if the hand yaku is present. Subsclasses
-    # must implement this.
+    # Determine if the hand yaku is present. Subclasses
+    # must implement present? and points or implement count.
     #
     # @return [true, false] true if the hand yaku is present, else false
     def present?
@@ -21,7 +21,7 @@ module Riichi::Score
     end
 
     # Get the yaku points for this hand if the yaku is present.
-    # Subclasses must implement this.
+    # Subclasses must implement present? and points or implement count.
     #
     # @return [Array<Integer>] array of length 2: the open points
     # and the closed points

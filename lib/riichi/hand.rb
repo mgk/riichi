@@ -247,18 +247,6 @@ module Riichi
       end
     end
 
-    def yakuhai_count(arrangement)
-      value_tiles.count { |tile| has_pung_of?(arrangement, tile) }
-    end
-
-    private def score(condition, closed_score, open_score: closed_score - 1)
-      if condition
-        closed? ? closed_score : open_score
-      else
-        0
-      end
-    end
-
     def chii_toitsu?(arrangement)
       *pairs, _atama = arrangement
       pairs.length == 7

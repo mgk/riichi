@@ -116,8 +116,9 @@ module Riichi
       end
     end
 
-    def self.get(suit: nil, rank: nil, wind: nil, dragon: nil)
+    def self.get(id: id, suit: nil, rank: nil, wind: nil, dragon: nil)
       case
+      when id then @tiles[id]
       when suit then @tiles[[suit, rank]]
       when wind then @tiles[wind]
       when dragon then @tiles[dragon]
@@ -424,7 +425,19 @@ module Riichi
       end
 
       [key, tile]
-    end.to_h.freeze
+    end.to_h
+
+    # tile aliases
+    @tiles[:ton] = @tiles[:east]
+    @tiles[:nan] = @tiles[:south]
+    @tiles[:sha] = @tiles[:west]
+    @tiles[:pei] = @tiles[:north]
+
+    @tiles[:haku] = @tiles[:white]
+    @tiles[:hatsu] = @tiles[:green]
+    @tiles[:chun] = @tiles[:red]
+
+    @tiles.freeze
 
     # tiles keyed by their string representations
     # suited tiles have one string representation,

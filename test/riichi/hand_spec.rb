@@ -112,25 +112,6 @@ describe Hand do
     end
   end
 
-  describe "yakuhai_count" do
-    other_tiles = "2s 2s 2s  4s 5s 6s  9s 9s"
-
-    it "reports 1 for each value tile pung" do
-      [
-        ["Gd Gd Gd  1p 1p 1p", :east, :east,    1],
-        ["Ew Ew Ew  1p 1p 1p", :south, :west,   0],
-        ["Ew Ew Ew  1p 1p 1p", :east, :west,    1],
-        ["Ew Ew Ew  1p 1p 1p", :east, :east,    2],
-        ["Ew Ew Ew  Rd Rd Rd", :east, :east,    3],
-      ].each do |tiles, bakaze, jikaze, score|
-        hand = Hand.new(other_tiles + " " + tiles, bakaze: bakaze, jikaze: jikaze)
-        hand.complete_arrangements.length.must_equal(1)
-        arrangement = hand.complete_arrangements.first
-        hand.yakuhai_count(arrangement).must_equal(score, "#{hand} should score #{score}")
-      end
-    end
-  end
-
   describe "mixed_triple_chow? (san shoku dojun)" do
     it "reports false when not present" do
       ['1s 2s 3s - 1m 2m 3m - 2p 3p 4p - 3m 3m 3m -7s 7s',
