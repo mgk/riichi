@@ -247,20 +247,6 @@ module Riichi
       end
     end
 
-    def chanta?(arrangement)
-      all_sets_have_outside_tile = (arrangement + melds).all? do |set|
-        set.any? { |tile| tile.terminal? || tile.honour? }
-      end
-      has_chow = (arrangement + melds).any? { |set| Tile.chow?(set) }
-      has_suit = (arrangement + melds).flatten.any?(&:suited?)
-      has_honour = (arrangement + melds).flatten.any?(&:honour?)
-
-      all_sets_have_outside_tile &&
-        has_chow &&
-        has_suit &&
-        has_honour
-    end
-
     def san_anko?(arrangement)
       arrangement.count { |set| Tile.pung?(set) } >= 3
     end
