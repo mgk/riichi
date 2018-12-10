@@ -247,11 +247,6 @@ module Riichi
       end
     end
 
-    def chii_toitsu?(arrangement)
-      *pairs, _atama = arrangement
-      pairs.length == 7
-    end
-
     def mixed_triple_chow?(arrangement)
       *sets, _atama = arrangement
       chows = (sets + melds).find_all { |set| Tile.chow?(set) }

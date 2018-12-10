@@ -146,25 +146,6 @@ describe Hand do
     end
   end
 
-  describe "chii_toitsu?" do
-    it "reports false when not present" do
-      ['1s 2s 3s - 1m 2m 3m - 2p 3p 4p - 3m 3m 3m - 7s 7s'].each do |hand|
-        hand = Hand.new(hand)
-        hand.complete_arrangements.length.must_equal(1)
-        arrangement = hand.complete_arrangements.first
-        hand.chii_toitsu?(arrangement).must_equal(false, hand)
-      end
-    end
-    it "reports true when present" do
-      ['1m 1m - 3m 3m - 1s 1s - 3s 3s - 1p 1p - 2p 2p - 8p 8p'].each do |hand|
-        hand = Hand.new(hand)
-        hand.complete_arrangements.length.must_equal(1)
-        arrangement = hand.complete_arrangements.first
-        hand.chii_toitsu?(arrangement).must_equal(true, hand)
-      end
-    end
-  end
-
   describe "ittsu?" do
     it "reports 0 when straight in suit is not complete" do
       hand = Hand.new("1p 2p 3p 4p 5p 6p 7m 8m 9m - Gd Gd Gd - 7m 7m")
