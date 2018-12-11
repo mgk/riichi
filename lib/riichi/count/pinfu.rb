@@ -6,7 +6,7 @@ module Riichi::Count
     end
 
     def all_chows?
-      all_sets.all? { |set| Riichi::Tile.chow? set }
+      closed_chows.length == 4
     end
 
     def valueless_atama?
@@ -15,9 +15,9 @@ module Riichi::Count
 
     def two_sided_wait?
       draw = hand.last_draw
-      sets.any? do |set|
-        (draw == set.first && draw.rank != 7) ||
-          (draw == set.last && draw.rank != 3)
+      chows.any? do |chow|
+        (draw == chow.first && draw.rank != 7) ||
+          (draw == chow.last && draw.rank != 3)
       end
     end
 

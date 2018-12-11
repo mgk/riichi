@@ -6,7 +6,7 @@ module Riichi::Count
 
     # todo: ron tile cannot count towards closed pung (but tsumo tile can)
     def present?
-      sets.count { |set|  Riichi::Tile.pung?(set) } == 3
+      closed_pungs.length == 3
     end
   end
 end

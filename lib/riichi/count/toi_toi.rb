@@ -5,7 +5,7 @@ module Riichi::Count
     end
 
     def present?
-      all_sets.all? { |set| Riichi::Tile.pung?(set) }
+      sets.all? { |set| Riichi::Tile.pung?(set) }
     end
   end
 end

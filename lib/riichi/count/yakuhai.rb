@@ -12,9 +12,9 @@ module Riichi::Count
       multiplier = hand.value_tiles.count { |t| t == tile }
 
       # number of pungs of the given tile
-      pungs = all_sets.map(&:first).count { |t| t == tile }
+      pung_count = pungs.map(&:first).count { |t| t == tile }
 
-      pungs * multiplier
+      pung_count * multiplier
     end
 
     def present?

@@ -7,7 +7,6 @@ module Riichi::Count
 
     def present?
       # group the chows by suit
-      chows = all_sets.find_all { |set| Riichi::Tile.chow?(set) }
       suits = chows.group_by { |chow| chow.first.suit }.values
 
       # look for any suit that has the required 3 chows
