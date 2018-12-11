@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Tile do
+describe Riichi::Tile do
 
   describe "to_tile" do
     it "works for a wind" do
-      t = Tile.to_tile('Ww')
+      t = Riichi::Tile.to_tile('Ww')
       t.suit.must_be_nil
       t.rank.must_be_nil
       t.str.must_equal 'Ww'
@@ -13,7 +13,7 @@ describe Tile do
     end
 
     it "works for a suited tile" do
-      t = Tile.to_tile('1p')
+      t = Riichi::Tile.to_tile('1p')
       t.suit.must_equal :pinzu
       t.rank.must_equal 1
       t.str.must_equal '1p'
@@ -26,7 +26,7 @@ describe Tile do
         ['W', 'Wd'], ['G', 'Gd'], ['R', 'Rd'],
         ['e', 'Ew'], ['s', 'Sw'], ['w', 'Ww'], ['n', 'Nw']
       ].each do |short_string, str|
-        assert Tile.to_tile(short_string) == Tile.to_tile(str)
+        assert Riichi::Tile.to_tile(short_string) == Riichi::Tile.to_tile(str)
       end
     end
   end
@@ -39,17 +39,17 @@ describe Tile do
         ["WGR W",            "Wd Gd Rd Wd"],
         ["eswn Ww",          "Ew Sw Ww Nw Wd Ww"],
       ].each do |short, long|
-        assert Tile.to_tiles(short) == Tile.to_tiles(long)
+        assert Riichi::Tile.to_tiles(short) == Riichi::Tile.to_tiles(long)
       end
     end
 
     it "Ww is West Wind" do
-      assert Tile.to_tiles("Ww") == [Tile.to_tile("Ww")]
+      assert Riichi::Tile.to_tiles("Ww") == [Riichi::Tile.to_tile("Ww")]
     end
   end
 
   describe "diff" do
-    it "removes the first occurrence of each Tile" do
+    it "removes the first occurrence of each Riichi::Tile" do
       test_cases = [
         # minuend            subtrahend        difference
         ["1p 2p 3p",         "2p 3p",          "1p"],
@@ -57,10 +57,10 @@ describe Tile do
         ["Ww Ew Ww Ww",      "Ww Ww",          "Ew Ww"],
         ["1p",               "2p",             "1p"],
         ["1p 8p 9p",         "Ww Ew Nw Wd",    "1p 8p 9p"],
-      ].map { |test| test.map { |s| Tile.to_tiles(s) } }
+      ].map { |test| test.map { |s| Riichi::Tile.to_tiles(s) } }
 
       test_cases.each do |minuend, subtrahend, difference|
-        Tile.diff(minuend, subtrahend).must_equal(difference)
+        Riichi::Tile.diff(minuend, subtrahend).must_equal(difference)
       end
     end
   end
@@ -70,22 +70,22 @@ describe Tile do
       unsorted = '1m 2p 3s 2s 2m 1s 1m Wd Wd Gd Nw Ew Ww Sw Rd'
       sorted   = '1m 1m 2m 1s 2s 3s 2p Ew Sw Ww Nw Wd Wd Gd Rd'
 
-      Tile.to_tiles(unsorted).sort.must_equal(Tile.to_tiles(sorted))
+      Riichi::Tile.to_tiles(unsorted).sort.must_equal(Riichi::Tile.to_tiles(sorted))
     end
   end
 
   describe "pung?" do
     it "is true with three matching tiles" do
       [%w[5s 5s 5s], %w[Wd Wd Wd]].each do |strings|
-        set = strings.map { |s| Tile.to_tile(s) }
-        Tile.pung?(set).must_equal true
+        set = strings.map { |s| Riichi::Tile.to_tile(s) }
+        Riichi::Tile.pung?(set).must_equal true
       end
     end
 
     it "is false otherwise" do
       [%w[5s 5s 6s], %w[1m 2m 3m], %w[2p Gd Gd]].each do |strings|
-        set = strings.map { |s| Tile.to_tile(s) }
-        Tile.pung?(set).must_equal false
+        set = strings.map { |s| Riichi::Tile.to_tile(s) }
+        Riichi::Tile.pung?(set).must_equal false
       end
     end
   end
@@ -93,8 +93,8 @@ describe Tile do
   describe "chow?" do
     it "is true with suited tiles in ascending order" do
       [%w[1s 2s 3s], %w[5p 6p 7p]].each do |strings|
-        set = strings.map { |s| Tile.to_tile(s) }
-        Tile.chow?(set).must_equal true
+        set = strings.map { |s| Riichi::Tile.to_tile(s) }
+        Riichi::Tile.chow?(set).must_equal true
       end
     end
 
@@ -105,16 +105,16 @@ describe Tile do
         %w[2m 2m 3m],
         %w[Wd Wd Wd]
       ].each do |strings|
-        set = strings.map { |s| Tile.to_tile(s) }
-        Tile.chow?(set).must_equal false
+        set = strings.map { |s| Riichi::Tile.to_tile(s) }
+        Riichi::Tile.chow?(set).must_equal false
       end
     end
   end
 
   describe "initial_chow" do
     it "works" do
-      Tile.initial_chow(Tile.to_tiles("7s 8s 8s 8s 9s 1m"))
-        .must_equal(Tile.to_tiles("7s 8s 9s"))
+      Riichi::Tile.initial_chow(Riichi::Tile.to_tiles("7s 8s 8s 8s 9s 1m"))
+        .must_equal(Riichi::Tile.to_tiles("7s 8s 9s"))
     end
   end
 
@@ -128,11 +128,11 @@ describe Tile do
         ["1m 1m 2s 3s",       ["1m 1m"],          "2s 3s"],
 
       ].map do |tiles, pairs, leftovers|
-        pairs = pairs.map { |s| Tile.to_tiles(s) }
-        [Tile.to_tiles(tiles), pairs, Tile.to_tiles(leftovers)]
+        pairs = pairs.map { |s| Riichi::Tile.to_tiles(s) }
+        [Riichi::Tile.to_tiles(tiles), pairs, Riichi::Tile.to_tiles(leftovers)]
       end
       .each do |tiles, pairs, leftovers|
-        Tile.pairs(tiles).must_equal([pairs, leftovers], tiles)
+        Riichi::Tile.pairs(tiles).must_equal([pairs, leftovers], tiles)
       end
     end
   end
@@ -140,14 +140,14 @@ describe Tile do
   describe "tatsu?" do
     it "reports tiles form a tatsu" do
       ["1m 2m", "2p 4p", "3s 4s", "7s 9s",].each do |tile_string|
-        tiles = Tile.to_tiles(tile_string)
+        tiles = Riichi::Tile.to_tiles(tile_string)
         tiles[0].tatsu?(tiles[1]).must_equal(true, tile_string)
         tiles[1].tatsu?(tiles[0]).must_equal(true, tile_string)
       end
     end
     it "reports tiles do NOT form a tatsu" do
       ["1m 1m", "2p 5p", "5s 9s", "Rd Wd"].each do |tile_string|
-        tiles = Tile.to_tiles(tile_string)
+        tiles = Riichi::Tile.to_tiles(tile_string)
         tiles[0].tatsu?(tiles[1]).must_equal(false, tile_string)
         tiles[1].tatsu?(tiles[0]).must_equal(false, tile_string)
       end
@@ -163,7 +163,7 @@ describe Tile do
         ["6p 8p", "7p"],
         ["7p 8p", "6p 9p"],
       ].each do |tiles, expected|
-        Tile.tiles_that_complete_chow(Tile.to_tiles(tiles))
+        Riichi::Tile.tiles_that_complete_chow(Riichi::Tile.to_tiles(tiles))
       end
     end
     it "reports that no tiles complete the chow" do
@@ -172,7 +172,7 @@ describe Tile do
         ["2s 5s", ""],
         ["1p 9p", ""],
       ].each do |tiles, expected|
-        Tile.tiles_that_complete_chow(Tile.to_tiles(tiles))
+        Riichi::Tile.tiles_that_complete_chow(Riichi::Tile.to_tiles(tiles))
       end
     end
   end
@@ -263,16 +263,16 @@ describe Tile do
 
       ].map do |input, expected_arrangements|
         arrangements = expected_arrangements.map do |arrangement|
-          arrangement.map { |array| Tile.to_tiles(array) }
+          arrangement.map { |array| Riichi::Tile.to_tiles(array) }
         end
-        [Tile.to_tiles(input), arrangements]
+        [Riichi::Tile.to_tiles(input), arrangements]
       end
 
       test_cases.each do |tiles, expected|
-        actual = Tile.arrangements(tiles)
-        leftovers = Tile.diff(tiles, actual)
+        actual = Riichi::Tile.arrangements(tiles)
+        leftovers = Riichi::Tile.diff(tiles, actual)
         leftovers.combination(3) do |group|
-          Tile.set?(group).must_equal(false, "missed set #{group} for #{tiles}")
+          Riichi::Tile.set?(group).must_equal(false, "missed set #{group} for #{tiles}")
         end
 
         actual.sort.must_equal(expected.sort, "input: #{tiles}")
@@ -283,28 +283,28 @@ describe Tile do
 
     it "random hand test - (#{RIICHI_TEST_HAND_COUNT} iterations)" do
       RIICHI_TEST_HAND_COUNT.times do |n|
-        hand = Tile.deck.sample(14)
+        hand = Riichi::Tile.deck.sample(14)
 
-        Tile.arrangements(hand).each do |arrangement|
+        Riichi::Tile.arrangements(hand).each do |arrangement|
           # all sets in the arrangement must really be sets
           if arrangement.length.between?(6, 7)
             arrangement.each do |pair|
-              Tile.pair?(pair).must_equal(true, "n=[#{n}] bad pair #{pair} for #{hand}")
+              Riichi::Tile.pair?(pair).must_equal(true, "n=[#{n}] bad pair #{pair} for #{hand}")
             end
           else
             arrangement.each do |set|
-              Tile.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
+              Riichi::Tile.set?(set).must_equal(true, "n=[#{n}] bad set #{set} for #{hand}")
             end
           end
 
           # all arrangement tiles exist in the hand
-          Tile.diff(arrangement.sum([]), hand)
+          Riichi::Tile.diff(arrangement.sum([]), hand)
           .must_be_empty("too many tiles in arrangement #{arrangement} for #{hand}")
 
           # the leftovers contain no sets
-          leftovers = Tile.diff(hand, arrangement)
+          leftovers = Riichi::Tile.diff(hand, arrangement)
           leftovers.combination(3) do |group|
-            Tile.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")
+            Riichi::Tile.set?(group).must_equal(false, "n=[#{n}] missed set #{group} for #{hand}")
           end
         end
       end

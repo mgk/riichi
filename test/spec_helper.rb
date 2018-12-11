@@ -7,8 +7,6 @@ SimpleCov.start do
 end
 
 require 'riichi'
-Tile = Riichi::Tile
-Hand = Riichi::Hand
 
 require 'minitest/autorun'
 require 'minitest/reporters'
@@ -31,9 +29,9 @@ end
 
 def yaku_count(hand_or_tiles, melds: [], bakaze: nil, jikaze: nil)
   hand = case hand_or_tiles
-  when Hand then hand_or_tiles
-  else Hand.new(hand_or_tiles, melds: melds, bakaze: bakaze, jikaze: jikaze)
+  when Riichi::Hand then hand_or_tiles
+  else Riichi::Hand.new(hand_or_tiles, melds: melds, bakaze: bakaze, jikaze: jikaze)
   end
 
-  hand_counter(hand).count
+  hand_counter(hand).yaku_count
 end

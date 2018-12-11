@@ -4,10 +4,10 @@ module Riichi::Score
     # works for subclasses with names that match tile ids
     def tile
       id = self.class.name.split("::").last.downcase
-      Riichi::Tile.get(id: id.to_sym)
+       Riichi::Tile.get(id: id.to_sym)
     end
 
-    def count
+    def yaku_count
       # @see Hand.value_tiles
       multiplier = hand.value_tiles.count { |t| t == tile }
 

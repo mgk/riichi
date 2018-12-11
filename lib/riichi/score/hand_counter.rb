@@ -41,7 +41,7 @@ module Riichi::Score
       *@sets, @atama = arrangement
     end
 
-    # @return [Array<Array<Tiles>>] open melds in the hand
+    # @return [Array<Array<Tile>>] open melds in the hand
     def melds
       hand.melds
     end
@@ -74,8 +74,8 @@ module Riichi::Score
       hand.closed?
     end
 
-    # Count the hand arrangement.
-    def count
+    # Get the yaku count for the hand arrangement.
+    def yaku_count
       if present?
         closed? ? closed_points : open_points
       else

@@ -5,7 +5,7 @@ module Riichi::Score
     end
 
     def present?
-      all_sets.all? { |set| Tile.pung?(set) }
+      all_sets.all? { |set| Riichi::Tile.pung?(set) }
     end
   end
 end

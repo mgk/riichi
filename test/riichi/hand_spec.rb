@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Hand do
+describe Riichi::Hand do
 
-  describe "complete?" do
+    describe "complete?" do
     it "returns false for incomplete hands" do
       [
         ["1s", ["1p 1p 1p", "2p 2p 2p", "3p 3p 3p", "4p 4p 4p"]],
@@ -12,7 +12,7 @@ describe Hand do
         ["4p 4p - 1p 1p - 2p 2p - Ew Ew - Sw Sw - Ww Ww - Gd", [""]],
       ]
       .each do |tiles, melds|
-        Hand.new(tiles, melds: melds.map { |m| Tile.to_tiles(m) })
+        Riichi::Hand.new(tiles, melds: melds.map { |m| Riichi::Tile.to_tiles(m) })
           .complete?.must_equal(false, "'#{tiles}' is not complete")
       end
     end
@@ -24,12 +24,12 @@ describe Hand do
         "4p 4p - 1p 1p - 2p 2p - Ew Ew - Sw Sw - Ww Ww - Nw Nw",
       ]
       .each do |tiles|
-        tiles = Tile.to_tiles(tiles)
+        tiles = Riichi::Tile.to_tiles(tiles)
         num_melds = (14 - tiles.length) / 3
         melds = (1..num_melds).map do |num|
-          [Tile.get(suit: :pinzu, rank: num)] * 3
+          [Riichi::Tile.get(suit: :pinzu, rank: num)] * 3
         end
-        Hand.new(tiles, melds: melds)
+        Riichi::Hand.new(tiles, melds: melds)
           .complete?.must_equal(true, "'#{tiles}' is complete")
       end
     end
@@ -42,14 +42,14 @@ describe Hand do
         ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
         ["1s 1s 1s 3m 2m Nw Nw", ["1s 1s 1s"], "1m 4m"],
       ].map do |tiles, arrangement, waiting_tiles|
-        tiles = Tile.to_tiles(tiles)
+        tiles = Riichi::Tile.to_tiles(tiles)
         num_melds = (13 - tiles.length) / 3
         melds = (1..num_melds).map do |num|
-          [Tile.get(suit: :pinzu, rank: num)] * 3
+          [Riichi::Tile.get(suit: :pinzu, rank: num)] * 3
         end
-        [Hand.new(tiles, melds: melds),
-          arrangement.map { |s| Tile.to_tiles(s) },
-          Tile.to_tiles(waiting_tiles)]
+        [Riichi::Hand.new(tiles, melds: melds),
+          arrangement.map { |s| Riichi::Tile.to_tiles(s) },
+          Riichi::Tile.to_tiles(waiting_tiles)]
       end.each do |hand, arrangement, waiting_tiles|
         hand.waiting_tiles(arrangement).must_equal(waiting_tiles, hand)
       end
@@ -65,9 +65,10 @@ describe Hand do
           ]
         ],
       ].map do |hand, waits|
-        hand = Hand.new(hand)
+        hand = Riichi::Hand.new(hand)
         waits = waits.map do |arrangement, waiting_tiles|
-          [arrangement.map { |s| Tile.to_tiles(s) }.sort, Tile.to_tiles(waiting_tiles)]
+          [arrangement.map { |s| Riichi::Tile.to_tiles(s) }.sort,
+            Riichi::Tile.to_tiles(waiting_tiles)]
         end
         [hand, waits]
       end.each do |hand, waits|
@@ -83,7 +84,7 @@ describe Hand do
         '1s 1s 1s - 2p 2p 2p - 3m 3m 3m - Gd Gd Gd - Rd Rd',
         '1s 1s - 2p 2p - 3s 3s - 4m 4m - 5s 5s - 6p 6p - 7s 7s',
       ].each do |tiles|
-        hand = Hand.new(tiles)
+        hand = Riichi::Hand.new(tiles)
         hand.complete?.must_equal(true, tiles)
         hand.complete_arrangements.length.must_equal(1)
       end
@@ -93,7 +94,7 @@ describe Hand do
       [
         '1s 1s - 2p 2p - 3s 3s - 4m 4m - 5s 5s -- 6s 6s 6s 6s',
       ].each do |tiles|
-        Hand.new(tiles).complete?.must_equal(false, tiles)
+        Riichi::Hand.new(tiles).complete?.must_equal(false, tiles)
       end
     end
   end
@@ -103,9 +104,9 @@ describe Hand do
       [
         ["RR", ["eee sss www nnn"], [["RR"]] ],
       ].each do |tiles, melds, arrangements|
-        actual = Hand.new(tiles, melds: melds).complete_arrangements
+        actual = Riichi::Hand.new(tiles, melds: melds).complete_arrangements
         expected = arrangements.map do |arrangement|
-          arrangement.map { |set| Tile.to_tiles(set) }
+          arrangement.map { |set| Riichi::Tile.to_tiles(set) }
         end
         actual.must_equal(expected, [tiles, melds])
       end

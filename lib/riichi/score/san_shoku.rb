@@ -7,7 +7,7 @@ module Riichi::Score
 
     def present?
       # group each chow by rank of first tile
-      chows = all_sets.find_all { |set| Tile.chow?(set) }
+      chows = all_sets.find_all { |set| Riichi::Tile.chow?(set) }
       groups = chows.map(&:first).group_by(&:rank).values
 
       # look for 3 suits for any starting tile
