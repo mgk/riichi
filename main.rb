@@ -12,7 +12,7 @@ def t(s); Riichi::Tile.to_tiles(s); end
 hand = Riichi::Hand.new("s222333444 m123 m88")
 puts hand
 arrangement = hand.complete_arrangements.first
-puts Riichi::Score::Tanyao.new(hand, arrangement).count
+puts Riichi::Count::Tanyao.new(hand, arrangement).yaku_count
 Kernel.exit
 
 [

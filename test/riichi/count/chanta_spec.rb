@@ -1,4 +1,6 @@
-describe Riichi::Score::Chanta do
+require 'spec_helper'
+
+describe Riichi::Count::Chanta do
   context "not all sets include outside tile" do
     it "scores 0" do
       yaku_count("p123 p456 m789 GGG - m99").must_equal(0)

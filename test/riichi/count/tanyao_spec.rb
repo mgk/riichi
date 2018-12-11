@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::Tanyao do
+describe Riichi::Count::Tanyao do
   context "closed hand all simples" do
     it "scores 1" do
       yaku_count("s222-456-777 p222 m22").must_equal(1)

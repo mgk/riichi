@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Pinfu < HandCounter
+module Riichi::Count
+  class Pinfu < Counter
 
     def points
       [0, 1]

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::SanShoku do
+describe Riichi::Count::SanShoku do
   context "two suits" do
     it "scores 0" do
       yaku_count("m123 m123 s123 RRR m55").must_equal(0)

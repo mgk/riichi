@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::Chinitsu do
+describe Riichi::Count::Chinitsu do
   context "more than one suit" do
     it "scores 0" do
       yaku_count("p123-456 m111-789 - p99").must_equal(0)

@@ -222,45 +222,5 @@ module Riichi
       "tiles: #{Tile.to_short_s(tiles)}, open: #{melds.inspect}, discards: #{discards}"
     end
 
-    # Find all the hand counter classes: i.e., all of the
-    # leaf descendents of the HandCounter base class.
-    # @see Score::HandCounter
-    def self.hand_counters
-      @hand_counters ||= begin
-        classes = Score.constants
-          .map { |c| Score.module_eval(c.to_s) }
-          .map(&:ancestors)
-          .map { |cls, *parents| [cls, Set.new(parents)] }
-          .to_h
-        all_parents = classes.values.sum(Set.new)
-        classes.find_all do |cls, parents|
-          parents.include?(Score::HandCounter) &&
-            !all_parents.include?(cls)
-        end
-        .map(&:first)
-        .map { |cls| [cls.name.split('::').last, cls]}
-        .to_h
-      end
-    end
-
-    def yaku_count(arrangement)
-      Hand.hand_counters.transform_values do |counter|
-        counter.new(self, arrangement).yaku_count
-      end
-    end
-
-    # Count all the yaku for each complete arrangement.
-    #
-    # @return [Array<Score::HandScore>]
-    def all_yaku
-      complete_arrangements.map do |arrangement|
-        yaku = yaku_count(arrangement).keep_if { |_, count| count > 0 }
-        Score::HandScore.new(arrangement: arrangement, yaku: yaku)
-      end
-    end
-
-    def best_score
-      all_yaku.max { |a, b| a.total_yaku <=> b.total_yaku }
-    end
   end
 end

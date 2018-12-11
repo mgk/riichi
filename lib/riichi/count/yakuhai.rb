@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Yakuhai < HandCounter
+module Riichi::Count
+  class Yakuhai < Counter
     # @return [Tile] tile type for this class, only
     # works for subclasses with names that match tile ids
     def tile

@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Tanyao < HandCounter
+module Riichi::Count
+  class Tanyao < Counter
     def points
       [1, 1]
     end

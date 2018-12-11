@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::SanAnko do
+describe Riichi::Count::SanAnko do
   context "only 2 pungs" do
     it "scores 0" do
       yaku_count("m111 m222 m345 m567 - nn").must_equal(0)

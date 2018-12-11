@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::Honitsu do
+describe Riichi::Count::Honitsu do
   context "more than one suit" do
     context "closed" do
       it "scores 0" do

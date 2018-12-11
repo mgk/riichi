@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::Ittsu do
+describe Riichi::Count::Ittsu do
   context "straight not complete in one suit" do
     it "scoreds 0" do
       yaku_count("p123456 m789 GGG s77").must_equal(0)

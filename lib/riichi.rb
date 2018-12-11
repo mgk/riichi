@@ -1,7 +1,7 @@
 require 'require_all'
 
 require_relative 'riichi/version'
-require_relative 'riichi/score/hand_counter'
-require_relative 'riichi/score/yakuhai'
+require_relative 'riichi/count/counter'
+require_relative 'riichi/count/yakuhai'
 
 require_rel 'riichi'

@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Chanta < HandCounter
+module Riichi::Count
+  class Chanta < Counter
     def points
       [1, 2]
     end

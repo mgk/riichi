@@ -1,5 +1,5 @@
-module Riichi::Score
-  class SanShoku < HandCounter
+module Riichi::Count
+  class SanShoku < Counter
 
     def points
       [1, 2]

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::Pinfu do
+describe Riichi::Count::Pinfu do
   context "open hand with all chows" do
     it "scores 0" do
       yaku_count("s123 p123 m678 s77", melds: "m123").must_equal(0)

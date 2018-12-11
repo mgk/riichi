@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Ittsu < HandCounter
+module Riichi::Count
+  class Ittsu < Counter
 
     def points
       [1, 2]

@@ -1,5 +1,5 @@
-module Riichi::Score
-  class Chinitsu < HandCounter
+module Riichi::Count
+  class Chinitsu < Counter
     def points
       [5, 6]
     end

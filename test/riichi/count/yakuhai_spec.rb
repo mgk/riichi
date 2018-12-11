@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "dragons" do
-  describe Riichi::Score::Haku do
+  describe Riichi::Count::Haku do
     context "closed hand with dragon pung" do
       it "scores 1" do
         yaku_count("m123456789-99- WWW").must_equal(1)
@@ -19,7 +19,7 @@ describe "dragons" do
     end
   end
 
-  describe Riichi::Score::Hatsu do
+  describe Riichi::Count::Hatsu do
     context "closed hand with dragon pung" do
       it "scores 1" do
         yaku_count("m123456789-99- GGG").must_equal(1)
@@ -37,7 +37,7 @@ describe "dragons" do
     end
   end
 
-  describe Riichi::Score::Chun do
+  describe Riichi::Count::Chun do
     context "closed hand with dragon pung" do
       it "scores 1" do
         yaku_count("m123456789-99- RRR").must_equal(1)
@@ -57,7 +57,7 @@ describe "dragons" do
 end
 
 describe "winds" do
-  describe Riichi::Score::Ton do
+  describe Riichi::Count::Ton do
     context "closed hand double wind" do
       it "scores 2" do
         yaku_count("m123456789-99- eee", bakaze: :ton, jikaze: :ton).must_equal(2)
@@ -80,7 +80,7 @@ describe "winds" do
     end
   end
 
-  describe Riichi::Score::Nan do
+  describe Riichi::Count::Nan do
     context "closed hand double wind" do
       it "scores 2" do
         yaku_count("m123456789-99- sss", bakaze: :nan, jikaze: :nan).must_equal(2)
@@ -98,7 +98,7 @@ describe "winds" do
     end
   end
 
-  describe Riichi::Score::Sha do
+  describe Riichi::Count::Sha do
     context "closed hand double wind" do
       it "scores 2" do
         yaku_count("m123456789-99- www", bakaze: :sha, jikaze: :sha).must_equal(2)
@@ -116,7 +116,7 @@ describe "winds" do
     end
   end
 
-  describe Riichi::Score::Pei do
+  describe Riichi::Count::Pei do
     context "closed hand double wind" do
       it "scores 2" do
         yaku_count("m123456789-99- nnn", bakaze: :pei, jikaze: :pei).must_equal(2)

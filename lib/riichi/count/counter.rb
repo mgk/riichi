@@ -1,7 +1,9 @@
-module Riichi::Score
+module Riichi::Count
 
-  # Hand counter base
-  class HandCounter
+  # Hand counter base class. Counter counts Fu and there is
+  # a subclass that counts each Yaku type.
+  #
+  class Counter
 
     # @return [Array<Array<Tiles>>] open melds in the hand
     attr :hand
@@ -35,7 +37,7 @@ module Riichi::Score
     # @param [Array<Tile>] arrangement arrangement of tiles in hand
     # to count.
     #
-    # @return [HandCounter] counter
+    # @return [Counter] counter
     def initialize(hand, arrangement)
       @hand = hand
       *@sets, @atama = arrangement
@@ -80,6 +82,28 @@ module Riichi::Score
         closed? ? closed_points : open_points
       else
         0
+      end
+    end
+
+    # Get all the counter classes: i.e., all of the
+    # leaf subclassess of Counter.
+    # @return [Hash{String, Class}]
+    def self.counters
+      @hand_counters ||= begin
+        classes = Riichi::Count.constants
+          .map { |c| module_eval(c.to_s) }
+          .map(&:ancestors)
+          .map { |cls, *parents| [cls, Set.new(parents)] }
+          .to_h
+
+        all_parents = classes.values.sum(Set.new)
+
+        classes.find_all do |cls, parents|
+          parents.include?(Counter) && !all_parents.include?(cls)
+        end
+        .map(&:first)
+        .map { |cls| [cls.name.split('::').last.downcase, cls] }
+        .to_h
       end
     end
   end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Score::ToiToi do
+describe Riichi::Count::ToiToi do
   context "one chow and 3 pungs" do
     it "scores 0" do
       yaku_count("s123 m111 p222 m333 s77").must_equal(0)

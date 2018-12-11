@@ -17,11 +17,11 @@ require 'minitest-spec-context'
 def hand_counter(hand)
   hand.complete_arrangements.length.must_equal(1, "bad test: #{hand}")
 
-  # Find the innermost "describe XXX" where XXX is a HandCounter
+  # Find the innermost "describe XXX" where XXX is a Counter
   cls = self.class.ancestors.find do |a|
     a.respond_to?(:desc) &&
       a.desc.kind_of?(Class) &&
-      a.desc <= Riichi::Score::HandCounter
+      a.desc <= Riichi::Count::Counter
   end.desc
 
   cls.new(hand, hand.complete_arrangements.first)
