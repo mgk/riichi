@@ -7,4 +7,4 @@
 /spec/reports/
 /tmp/
 /coverage/
-Gemfile.lock
+#Gemfile.lock
