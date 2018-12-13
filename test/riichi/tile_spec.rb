@@ -82,15 +82,23 @@ describe Riichi::Tile do
       end
     end
 
+    it "is false otherwise" do
+      ['s556', 'm123', 'p2 GG', 'eeee'].each do |s|
+        Riichi::Tile.pung?(Riichi::Tile.to_tiles(s)).must_equal false
+      end
+    end
+  end
+
+  describe "kong?" do
     it "is true with 4 matching tiles" do
-      kong = Riichi::Tile.to_tiles('ssss')
-      Riichi::Tile.pung?(kong).must_equal true
+      ['m1111', 'WWWW'].each do |s|
+        Riichi::Tile.kong?(Riichi::Tile.to_tiles(s)).must_equal true
+      end
     end
 
     it "is false otherwise" do
-      [%w[5s 5s 6s], %w[1m 2m 3m], %w[2p Gd Gd]].each do |strings|
-        set = strings.map { |s| Riichi::Tile.to_tile(s) }
-        Riichi::Tile.pung?(set).must_equal false
+      ['m1234', 's111'].each do |s|
+        Riichi::Tile.kong?(Riichi::Tile.to_tiles(s)).must_equal false
       end
     end
   end

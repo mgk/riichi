@@ -168,7 +168,7 @@ module Riichi
     end
 
     def self.pung?(tiles)
-      tiles.size >= 3 && tiles.all? { |t| t == tiles.first }
+      tiles.size == 3 && tiles.all? { |t| t == tiles.first }
     end
 
     def self.kong?(tiles)

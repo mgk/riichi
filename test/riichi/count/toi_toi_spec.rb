@@ -15,7 +15,7 @@ describe Riichi::Count::ToiToi do
 
   context "closed hand all pungs and kongs" do
     it "scores 2" do
-      yaku_count("s111 s222 s77", kongs: ['p1111', 'RRRR']).must_equal(2)
+      yaku_count("s111 s222 s77", kongs: 'p1111', melds: 'GGGG' ).must_equal(2)
     end
   end
 

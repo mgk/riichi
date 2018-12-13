@@ -51,6 +51,11 @@ module Riichi::Count
       hand.melds
     end
 
+    # @return [Array<Array<Tile>>] closed kongs in the hand
+    def kongs
+      hand.kongs
+    end
+
     # @return [Array<Tile>] all the tiles in the hand, including
     # the open melds
     def all_tiles
@@ -60,7 +65,7 @@ module Riichi::Count
     # Get all the sets in the hand, including the open melds
     # @return [Array<Riichi::Tile>] the sets
     def sets
-      closed_sets + melds
+      closed_sets + melds + kongs
     end
 
     # Get all the chows in the hand including open melds
@@ -73,7 +78,7 @@ module Riichi::Count
       closed_sets.find_all { |set| Riichi::Tile.chow?(set) }
     end
 
-    # Get all the pungs in the hand including open melds
+    # Get all the pungs in the hand including open melds.
     # @return [Array<Riichi::Tile>] the pungs
     def pungs
       sets.find_all { |set| Riichi::Tile.pung?(set) }
