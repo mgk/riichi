@@ -4,24 +4,35 @@ module Riichi
   class Hand
 
     # @return [Array<Tiles>] unmelded tiles in the hand
-    attr_reader :tiles
+    attr :tiles
 
     # @return [Array<Array<Tiles>>] open melds in the hand
-    attr_reader :melds
+    attr :melds
+
+    # @return [Array<Array<Tiles>>] closed kongs in the hand
+    attr :kongs
 
     # @return [Array<Tiles>] tiles discarded from the hand
-    attr_reader :discards
+    attr :discards
 
     # @return [:east, :south, :west, :north] the prevailing wind
-    attr_reader :bakaze
+    attr :bakaze
 
     # @return [:east, :south, :west, :north] the seat wind
-    attr_reader :jikaze
+    attr :jikaze
 
     # @return [Array<Draw>] tiles drawn
-    attr_reader :draws
+    attr :draws
 
-    def initialize(tiles, bakaze: :east, jikaze: :east, melds: [], discards: [], draws: [])
+    def initialize(tiles,
+                   bakaze: :east,
+                   jikaze: :east,
+                   melds: [],
+                   kongs: [],
+                   discards: [],
+                   draws: [],
+                   tsumo: false,
+                   ron: false)
       @tiles = case tiles
       when String then Tile.to_tiles(tiles)
       when Array then tiles
@@ -31,19 +42,34 @@ module Riichi
         meld.is_a?(String) ? Tile.to_tiles(meld) : meld
       end
 
+      @kongs = [kongs].flatten(1).map do |kong|
+        kong.is_a?(String) ? Tile.to_tiles(kong) : meld
+      end
+
       @bakaze = bakaze
       @jikaze = jikaze
       @discards = discards
       @draws = draws
+      @tsumo = tsumo
+      @ron = ron
 
       if !valid?
         raise ArgumentError, self
       end
     end
 
+    def kongs
+      @kongs + @melds.find_all { |set| Tile.kong?(set) }
+    end
+
     def valid?
-      (@tiles + @melds.flatten).length.between?(13, 14) &&
-        @tiles.group_by { |x| x }.values.map(&:length).all? { |count| count <= 4 }
+      hand_length = (@tiles + @melds.flatten + @kongs.flatten).length
+      length_valid = (hand_length - kongs.length).between?(13, 14)
+      tiles_valid = (@tiles + melds.flatten).group_by { |t| t}
+        .values.map(&:length).all? { |count| count <= 4 }
+      win_state_valid = !@tsumo || !@ron
+
+      length_valid && tiles_valid && win_state_valid
     end
 
     # Draw a tile from the wall
@@ -86,7 +112,7 @@ module Riichi
     # Create an open pung meld of the given tile.
     #
     # @param [Tile, String] tile called tile discarded by opponent
-    def pung!(tile)
+    def pon!(tile)
       tile = Tile.to_tile(tile)
 
       unless @tiles.includes_all?([tile, tile])
@@ -99,12 +125,27 @@ module Riichi
       self
     end
 
+    def kan!(tile, replacement_tile)
+      triple = [tile] * 3
+      quad = [tile] * 4
+
+      if @tiles.includes_all?(quad)
+        @kongs += quad
+        @tiles = Tile.diff(@tiles, quad)
+      elsif @tiles.includes_all?(triple)
+        @melds += quad
+        @tiles = Tile.diff(@tiles, triple)
+      else
+        raise ArgumentError, self
+      end
+    end
+
     # Create an open chow meld.
     #
     # @param [Tile, String] tile called tile discarded by opponent
     # @param [Array<Tile>, String, Array<Integer>] tatsu 2 tiles in hand that
     # complete the chow when combined with the called tile.
-    def chi!(tile, tatsu)
+    def chii!(tile, tatsu)
       tile = Tile.to_tile(tile)
       if tatsu.is_a? String
         tatsu = Tile.to_tiles(tatsu)
@@ -127,9 +168,21 @@ module Riichi
     end
 
     def tsumo!
+      @tsumo = true
+      @ron = false
+    end
+
+    def tsumo?
+      @tsumo
     end
 
     def ron!(tile)
+      @ron = true
+      @tsumo = false
+    end
+
+    def ron?
+      @ron
     end
 
     def last_draw
@@ -219,7 +272,7 @@ module Riichi
     end
 
     def to_s
-      "tiles: #{Tile.to_short_s(tiles)}, open: #{melds.inspect}, discards: #{discards}"
+      "tiles: #{Tile.to_short_s(tiles)}, open: #{melds.inspect}, kongs: #{kongs.inspect}, discards: #{discards}"
     end
 
   end

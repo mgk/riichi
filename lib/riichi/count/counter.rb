@@ -4,9 +4,12 @@ module Riichi::Count
   # a subclass that counts each Yaku type.
   #
   class Counter
+    extend Forwardable
 
-    # @return [Array<Array<Tiles>>] open melds in the hand
+    # @return [Hand] the hand
     attr :hand
+
+    %w(closed? ron? tsumo?).each { |m| def_delegator :@hand, m.to_sym }
 
     # @return [Array<Array<Tiles>>] closed sets in the hand arrangement
     attr :closed_sets
@@ -93,10 +96,6 @@ module Riichi::Count
       points[1]
     end
 
-    def closed?
-      hand.closed?
-    end
-
     # Get the yaku count for the hand arrangement.
     def yaku_count
       if present?
@@ -107,6 +106,23 @@ module Riichi::Count
     end
 
     def fu_count
+      # todo chi_toi
+      fu = 20
+
+      if tsumo?
+        fu += 2
+      elsif closed?
+        fu += 10
+      end
+
+      # todo kuipinfu ? 2
+
+
+
+    end
+
+    def set_fu
+
     end
 
     # Get all the counter classes: i.e., all of the

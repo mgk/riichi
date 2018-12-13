@@ -82,6 +82,11 @@ describe Riichi::Tile do
       end
     end
 
+    it "is true with 4 matching tiles" do
+      kong = Riichi::Tile.to_tiles('ssss')
+      Riichi::Tile.pung?(kong).must_equal true
+    end
+
     it "is false otherwise" do
       [%w[5s 5s 6s], %w[1m 2m 3m], %w[2p Gd Gd]].each do |strings|
         set = strings.map { |s| Riichi::Tile.to_tile(s) }

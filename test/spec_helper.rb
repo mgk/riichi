@@ -27,10 +27,10 @@ def hand_counter(hand)
   cls.new(hand, hand.complete_arrangements.first)
 end
 
-def yaku_count(hand_or_tiles, melds: [], bakaze: nil, jikaze: nil)
+def yaku_count(hand_or_tiles, melds: [], bakaze: nil, jikaze: nil, kongs: [])
   hand = case hand_or_tiles
   when Riichi::Hand then hand_or_tiles
-  else Riichi::Hand.new(hand_or_tiles, melds: melds, bakaze: bakaze, jikaze: jikaze)
+  else Riichi::Hand.new(hand_or_tiles, melds: melds, bakaze: bakaze, jikaze: jikaze, kongs: kongs)
   end
 
   hand_counter(hand).yaku_count
