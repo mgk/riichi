@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mgk/riichi.svg?branch=master)](https://travis-ci.org/mgk/riichi)
+
 # Riichi
 
 Riichi Mahjong hand calculator. For info on what Riichi Mahjong is see:
