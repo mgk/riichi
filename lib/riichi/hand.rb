@@ -76,8 +76,6 @@ module Riichi
     #
     # @param [Tile, String] tile drawn
     def draw!(tile)
-      tile = Tile.to_tile(tile)
-
       unless @tiles.length % 3 == 1
         raise ArgumentError, "wrong number of tiles: #{self}"
       end
@@ -167,18 +165,30 @@ module Riichi
       self
     end
 
-    def tsumo!
+    # Declare tsumo win
+    #
+    # @param [Tile, String] tile drawn. If no tile is supplied
+    # the hand must already have been completed with a draw!
+    #
+    def tsumo!(tile=nil)
       @tsumo = true
       @ron = false
+
+      tile ? draw!(tile) : self
     end
 
     def tsumo?
       @tsumo
     end
 
+    # Declare ron win with the specificed discarded tile.
+    #
+    # @param [Tile, String] tile drawn
     def ron!(tile)
       @ron = true
       @tsumo = false
+
+      draw!(tile)
     end
 
     def ron?
@@ -195,6 +205,14 @@ module Riichi
 
     def closed?
       @melds.empty?
+    end
+
+    # Determine if the pung or kong is considered closed
+    # for purposes of counting fu and hands like san anko.
+    #
+    # @param [Array<Tile>] set pung or kong in hand arrangement
+    def closed_set?(set)
+      tsumo? || last_draw != set.first
     end
 
     def value_tiles

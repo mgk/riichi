@@ -31,4 +31,29 @@ describe Riichi::Count::SanAnko do
     end
   end
 
+  context "2 concealed pungs, ron on third pung" do
+    it "scores 2" do
+      # waiting on m4
+      hand = Riichi::Hand.new("s123 m111 m222 m44 nn")
+
+      # ron! m4
+      hand.ron!('m4')
+
+      # not san anko :(
+      hand_counter(hand).yaku_count.must_equal(0)
+    end
+  end
+
+  context "2 concealed pungs, tsumo on third pung" do
+    it "scores 2" do
+      # waiting on m4
+      hand = Riichi::Hand.new("s123 m111 m222 m44 nn")
+
+      # tsumo! m4
+      hand.tsumo!('m4')
+
+      # not san anko :(
+      hand_counter(hand).yaku_count.must_equal(2)
+    end
+  end
 end

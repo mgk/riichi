@@ -69,7 +69,7 @@ module Riichi::Count
     end
 
     # Get all the chows in the hand including open melds
-    # @return [Array<Riichi::Tile>] the chows
+    # @return [Array<Array<Riichi::Tile>>] the chows
     def chows
       sets.find_all { |set| Riichi::Tile.chow?(set) }
     end
@@ -79,29 +79,37 @@ module Riichi::Count
     end
 
     # Get all the pungs in the hand including open melds.
-    # @return [Array<Riichi::Tile>] the pungs
+    # @return [Array<Array<Riichi::Tile>>] the pungs
     def pungs
       sets.find_all { |set| Riichi::Tile.pung?(set) }
     end
 
-    def closed_pungs
-      # TODO: handle ron for san ako counting
-      closed_sets.find_all { |set| Riichi::Tile.pung?(set) }
+    # Get all the pungs and kongs in the hand that are considered
+    # clsoed for purposes of hands like san anko and counting fu
+    # @return [Array<Array<Riichi::Tile>>] the closed pungs and kongs
+    def closed_pungs_and_kongs
+      closed_sets.find_all do |set|
+        hand.closed_set?(set) &&
+          (Riichi::Tile.pung?(set) || Riichi::Tile.pung?(set))
+      end
     end
 
     # Get the points to score for the hand when it is open
     # and the hand yaku is present.
+    # @return [Integer] the points
     def open_points
       points[0]
     end
 
     # Get the points to score for the hand when it is closed
     # and the hand yaku is present.
+    # @return [Integer] the points
     def closed_points
       points[1]
     end
 
     # Get the yaku count for the hand arrangement.
+    # @return [Integer] the yaku
     def yaku_count
       if present?
         closed? ? closed_points : open_points
@@ -122,12 +130,19 @@ module Riichi::Count
 
       # todo kuipinfu ? 2
 
-
-
     end
 
-    def set_fu
+    def self.set_fu(set, closed)
+      fu = case
+      when Riichi::Tile.kong?(set) then 8
+      when Riichi::Tile.pung?(set) then 2
+      else 0
+      end
 
+      fu *= 2 if closed
+      fu *= 2 if set.first.terminal? || set.first.honour?
+
+      fu
     end
 
     # Get all the counter classes: i.e., all of the

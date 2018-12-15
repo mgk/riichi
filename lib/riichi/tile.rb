@@ -442,14 +442,22 @@ module Riichi
     @tiles.freeze
 
     # tiles keyed by their string representations
-    # suited tiles have one string representation,
-    # honour tiles have two
     @tiles_by_str = _tile_types.map { |t| [t.str, t] }.to_h
+
+    # honors also have short names
     by_short_name = @tiles_by_str.values.find_all(&:honour?).map do |t|
       [t.short, t]
     end.to_h
     @tiles_by_str.merge!(by_short_name)
+
+    # suited tiles have two strings ('1m' and 'm1' for :manzu 1)
+    suit_first = @tiles_by_str.values.find_all(&:suited?).map do |t|
+      [t.to_s.reverse, t]
+    end.to_h
+    @tiles_by_str.merge!(suit_first)
+
     @tiles_by_str.freeze
+
 
     # a full deck is 4 of eack tile
     @deck = (_tile_types * 4).freeze
