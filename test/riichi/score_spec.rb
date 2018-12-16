@@ -5,7 +5,8 @@ describe Riichi::Score do
     context "closed" do
       context "pinfu iipeiko" do
         it "scores 2 yaku, 20 fu" do
-          hand = Riichi::Hand.new('p123123 m234 s56 - s33')
+          hand = Riichi::Hand.new('p123123 m234 s56 - s33',
+            jikaze: :west)
           hand.draw! '4s'
           hand.tsumo!
           score = Riichi::Score.best_score(hand)
@@ -32,14 +33,20 @@ describe Riichi::Score do
       context "several sets" do
         it "scores 60 fu" do
           hand = Riichi::Hand.new('p111 s24 GG',
-            melds: "eee", kongs: 'm4444')
+            jikaze: :west,
+            melds: "eee",
+            kongs: 'm4444')
           hand.draw! 's3'
           hand.tsumo!
           score = Riichi::Score.best_score(hand)
 
-          score.yaku.must_equal({ton: 2})
-          score.total_yaku.must_equal(2)
+          score.yaku.must_equal({ton: 1})
+          score.total_yaku.must_equal(1)
           score.fu.must_equal(60)
+          score.payments(dealer: false, bonus: 2).must_equal({
+            dealer: 3900,
+            others: 2000,
+          })
         end
       end
     end

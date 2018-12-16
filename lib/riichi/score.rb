@@ -57,6 +57,33 @@ module Riichi
       end
     end
 
+    def self.base_points(han, fu)
+      fu * 2.pow(han + 2)
+    end
+
+    # Get the payments for the hand arrangement
+    def payments(dealer:, bonus:)
+      points = Score.base_points(bonus + total_yaku, fu)
+      payments = if hand.tsumo?
+        if dealer
+          { others: 2 * points }
+        else
+          { dealer: 2 * points, others: points }
+        end
+      else
+        if dealer
+          { discarder: 6 * points }
+        else
+          { discarder: 4 * points }
+        end
+      end
+
+      # round each payment up to nearest hundred
+      payments.transform_values do |payment|
+        (payment + 49).round(-2)
+      end
+    end
+
     # Get the best Score for the hand by scoring each
     # complete arrangement.
     def self.best_score(hand)
