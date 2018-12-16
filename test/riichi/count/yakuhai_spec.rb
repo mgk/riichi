@@ -7,6 +7,11 @@ describe "dragons" do
         yaku_count("m123456789-99- WWW").must_equal(1)
       end
     end
+    context "closed hand with dragon kong" do
+      it "scores 1" do
+        yaku_count("m123456789-99", kongs: "WWWW").must_equal(1)
+      end
+    end
     context "open hand with dragon pung" do
       it "scores 1" do
         yaku_count("m123456789-99", melds: "WWW").must_equal(1)

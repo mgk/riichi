@@ -207,11 +207,11 @@ module Riichi
       @melds.empty?
     end
 
-    # Determine if the pung or kong is considered closed
+    # Determine if a set is considered closed
     # for purposes of counting fu and hands like san anko.
     #
     # @param [Array<Tile>] set pung or kong in hand arrangement
-    def closed_set?(set)
+    def strictly_closed?(set)
       tsumo? || last_draw != set.first
     end
 

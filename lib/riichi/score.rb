@@ -21,6 +21,30 @@ module Riichi
       .keep_if { |_, count| count > 0 }
     end
 
+    def extra_fu
+      @extra_fu ||= Count::Counter.new(hand, arrangement).fu
+    end
+
+    def fu
+      @fu ||= begin
+        if chiitoi?
+          25
+        else
+          points = 20
+
+          if hand.tsumo?
+            points += 2 unless pinfu?
+          else
+            points += 10 if hand.closed?
+          end
+          points += 2 if hand.open? && extra_fu == 0
+
+          points += extra_fu
+          (points + 4).round(-1)
+        end
+      end
+    end
+
     # @return [Integer] total yaku count for the hand
     def total_yaku
       @total_yaku ||= yaku.values.sum
@@ -39,5 +63,13 @@ module Riichi
       all_scores(hand).max { |a, b| a.total_yaku <=> b.total_yaku }
     end
 
+    Count::Counter.counters.keys.each do |hand_type|
+      define_method hand_type do
+        yaku[hand_type]
+      end
+      define_method :"#{hand_type}?" do
+        yaku.has_key?(hand_type)
+      end
+    end
   end
 end

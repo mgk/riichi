@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Riichi::Count::ChiToi do
+describe Riichi::Count::ChiiToi do
   context "hand with chows and pung" do
     it "scores 0" do
       yaku_count("s123 m123 p123 m333 s77").must_equal(0)

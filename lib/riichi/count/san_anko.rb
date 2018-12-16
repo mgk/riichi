@@ -5,7 +5,9 @@ module Riichi::Count
     end
 
     def present?
-      closed_pungs_and_kongs.length == 3
+      strictly_closed_sets.count do |set|
+        Riichi::Tile.pung?(set) || Riichi::Tile.kong?(set)
+      end == 3
     end
   end
 end

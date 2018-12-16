@@ -1,5 +1,5 @@
 module Riichi::Count
-  class ChiToi < Counter
+  class ChiiToi < Counter
     def points
       [0, 2]
     end

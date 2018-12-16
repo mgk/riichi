@@ -138,16 +138,21 @@ module Riichi
     #  Tile.to_tiles(long) == Tile.to_tiles(short) #=> true
     # @return [Array<Tile>] tiles represented by str
     def self.to_tiles(str)
-      str.tr('-,', ' ').split(' ').map { |tile| Tile.to_tile(tile) }
-    rescue
-      str.tr('-_()[]{}', '').scan(TILE_PATTERN).map(&:first).flat_map do |match|
-        if match.length == 1
-          Tile.to_tile(match)
-        else
-          suit, *ranks = match.chars
-          ranks.map { |rank| Tile.to_tile(rank + suit) }
+      return [] if str.empty?
+      tiles = begin
+        str.tr('-,', ' ').split(' ').map { |tile| Tile.to_tile(tile) }
+      rescue
+        str.tr('-_()[]{}', '').scan(TILE_PATTERN).map(&:first).flat_map do |match|
+          if match.length == 1
+            Tile.to_tile(match)
+          else
+            suit, *ranks = match.chars
+            ranks.map { |rank| Tile.to_tile(rank + suit) }
+          end
         end
       end
+      raise ArgumentError, str if tiles.empty?
+      tiles
     end
 
     def self.to_short_s(tiles)

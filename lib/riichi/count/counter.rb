@@ -9,7 +9,9 @@ module Riichi::Count
     # @return [Hand] the hand
     attr :hand
 
-    %w(closed? ron? tsumo?).each { |m| def_delegator :@hand, m.to_sym }
+    %w(closed? strictly_closed? last_draw).each do |method_name|
+      def_delegator :@hand, method_name.to_sym
+    end
 
     # @return [Array<Array<Tiles>>] closed sets in the hand arrangement
     attr :closed_sets
@@ -84,14 +86,11 @@ module Riichi::Count
       sets.find_all { |set| Riichi::Tile.pung?(set) }
     end
 
-    # Get all the pungs and kongs in the hand that are considered
-    # clsoed for purposes of hands like san anko and counting fu
-    # @return [Array<Array<Riichi::Tile>>] the closed pungs and kongs
-    def closed_pungs_and_kongs
-      closed_sets.find_all do |set|
-        hand.closed_set?(set) &&
-          (Riichi::Tile.pung?(set) || Riichi::Tile.pung?(set))
-      end
+    # Get all the strictly closed sets. A set is strictly closed if
+    # it is a not formed by the called ron tile.
+    # @return [Array<Array<Riichi::Tile>>] the strictly closed sets.
+    def strictly_closed_sets
+      closed_sets.find_all { |set| strictly_closed?(set) }
     end
 
     # Get the points to score for the hand when it is open
@@ -118,36 +117,71 @@ module Riichi::Count
       end
     end
 
-    def fu_count
-      # todo chi_toi
-      fu = 20
-
-      if tsumo?
-        fu += 2
-      elsif closed?
-        fu += 10
-      end
-
-      # todo kuipinfu ? 2
-
+    # Get the fu count for the hand arrangement. This
+    # is the fu count for sets, waits, and the pair. It does
+    # not include the fu for winning (futei) and is not rounded.
+    def fu
+      fu_for_sets + fu_for_wait + fu_for_pair
     end
 
-    def self.set_fu(set, closed)
+    def fu_for_sets
+      sets.sum { |set| set_fu(set) }
+    end
+
+    def fu_for_pair
+      hand.value_tiles.count do |tile|
+        tile == atama.first
+      end * 2
+    end
+
+    def set_fu(set)
       fu = case
       when Riichi::Tile.kong?(set) then 8
       when Riichi::Tile.pung?(set) then 2
       else 0
       end
 
-      fu *= 2 if closed
+      fu *= 2 if strictly_closed?(set)
       fu *= 2 if set.first.terminal? || set.first.honour?
 
       fu
     end
 
+    def fu_for_wait
+      case
+      when penchan? then 2
+      when kanchan? then 2
+      when tanki? then 2
+      else 0
+      end
+    end
+
+    # Edge wait
+    def penchan?
+      chows.any? do |chow|
+        (last_draw == chow.last && chow.first.rank == 1) ||
+          (last_draw == chow.first && chow.last.rank == 9)
+      end
+    end
+
+    # Center wait
+    def kanchan?
+      chows.any? { |chow| last_draw == chow[1] }
+    end
+
+    # Pair wait
+    def tanki?
+      last_draw == atama.first
+    end
+
+    # Double pairs (shabo)
+    def shanpon?
+      pungs.any? { |pung| last_draw == pung.first }
+    end
+
     # Get all the counter classes: i.e., all of the
     # leaf subclassess of Counter.
-    # @return [Hash{String, Class}]
+    # @return [Hash{String => Class}]
     def self.counters
       @hand_counters ||= begin
         classes = Riichi::Count.constants
